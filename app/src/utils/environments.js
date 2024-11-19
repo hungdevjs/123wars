@@ -1,0 +1,13 @@
+const environments = {
+  VITE_ENV: import.meta.env.VITE_ENV,
+  THIRD_WEB_CLIENT_ID: import.meta.env.VITE_THIRD_WEB_CLIENT_ID,
+  FIREBASE_API_KEY: import.meta.env.VITE_FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  FIREBASE_PROJECT_ID: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  FIREBASE_STORAGE_BUCKET: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  FIREBASE_MESSAGING_SENDER_ID: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  FIREBASE_APP_ID: import.meta.env.VITE_FIREBASE_APP_ID,
+  BACKEND_URL: import.meta.env.VITE_BACKEND_URL,
+};
+
+export default environments;
