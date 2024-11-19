@@ -13,13 +13,16 @@ const useUser = () => {
   useEffect(() => {
     let unsubscribe;
     if (wallet?.address) {
-      unsubscribe = onSnapshot(doc(firestore, 'users', wallet?.address?.toLowerCase()), (snapshot) => {
-        if (snapshot.exists()) {
-          setUser({ id: snapshot.id, ...snapshot.data() });
-        } else {
-          setUser(null);
+      unsubscribe = onSnapshot(
+        doc(firestore, 'users', wallet?.address?.toLowerCase()),
+        (snapshot) => {
+          if (snapshot.exists()) {
+            setUser({ id: snapshot.id, ...snapshot.data() });
+          } else {
+            setUser(null);
+          }
         }
-      });
+      );
     } else {
       setUser(null);
     }

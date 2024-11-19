@@ -1,11 +1,11 @@
-import Header from './/Header';
+import Header from './Header';
 import Footer from './Footer';
 
 const Layout = ({ children }) => {
   return (
-    <div className="h-svh flex flex-col bg-slate-100">
+    <div className="h-svh flex flex-col">
       <Header />
-      {children}
+      <div className="min-h-0 flex-1 flex flex-col">{children}</div>
       <Footer />
     </div>
   );

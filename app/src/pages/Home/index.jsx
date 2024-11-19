@@ -1,9 +1,8 @@
-import GameCanvas from '../../components/GameCanvas';
-
 const Home = () => {
   return (
-    <div className="flex flex-col justify-center py-4" style={{ height: 'calc(100svh - 123px)' }}>
-      <GameCanvas />
+    <div className="h-full overflow-y-auto">
+      <div className="bg-red-200 h-[1000px]"></div>
+      <div className="bg-blue-100 h-[1000px]"></div>
     </div>
   );
 };
