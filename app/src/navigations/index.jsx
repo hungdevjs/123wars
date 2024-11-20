@@ -1,9 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 
 import SplashScreen from '../components/SplashScreen';
-import Home from '../pages/Home';
-import Subscribe from '../pages/Subscribe';
 import Layout from '../components/Layout';
+import Home from '../pages/Home';
+import PuzzleRoutes from './PuzzleRoutes';
+import RankRoutes from './RankRoutes';
+import AccountRoutes from './AccountRoutes';
 import useAuth from '../hooks/useAuth';
 import useUser from '../hooks/useUser';
 
@@ -17,7 +19,9 @@ const Navigations = () => {
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/" element={<Subscribe />} />
+        <Route path="/puzzles/*" element={<PuzzleRoutes />} />
+        <Route path="/rank/*" element={<RankRoutes />} />
+        <Route path="/account/*" element={<AccountRoutes />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Layout>

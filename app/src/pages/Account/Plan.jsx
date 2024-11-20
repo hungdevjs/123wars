@@ -24,9 +24,9 @@ const plans = [
   },
 ];
 
-const Subscribe = () => {
+const Plan = () => {
   return (
-    <div className="h-full overflow-y-auto p-2 flex flex-col gap-4">
+    <div className="h-full overflow-y-auto px-2 flex flex-col gap-4">
       <p className="font-medium text-center">
         Subscribe to a plan and get 3 chances daily to claim ETH and point
         rewards dropped at random times — be the fastest and win!
@@ -35,7 +35,7 @@ const Subscribe = () => {
         {plans.map((plan) => (
           <div
             key={plan.name}
-            className={`p-4 rounded-xl shadow-md ${plan.bg} flex flex-col items-center gap-2`}
+            className={`p-4 rounded-xl ${plan.bg} flex flex-col items-center gap-2`}
           >
             <div>
               <p className="text-xl md:text-2xl font-semibold text-center uppercase">
@@ -46,7 +46,7 @@ const Subscribe = () => {
             <IconCrypto className="w-20 h-20" />
             <button
               type="button"
-              className="w-full justify-center rounded-lg bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm transition duration-300 active:bg-blue-700 disabled:opacity-60"
+              className="w-full justify-center rounded-lg bg-blue-500 px-3 py-2 text-sm font-semibold text-white transition duration-300 active:bg-blue-700 disabled:opacity-60"
             >
               {`SUBSCRIBE (${plan.price} ETH)`}
             </button>
@@ -57,4 +57,4 @@ const Subscribe = () => {
   );
 };
 
-export default Subscribe;
+export default Plan;

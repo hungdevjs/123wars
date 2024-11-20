@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { IconFeed, IconPuzzle, IconRank, IconUser } from './Icons';
 import useUserStore from '../stores/user.store';
@@ -12,6 +12,7 @@ const navs = [
 
 const Footer = () => {
   const user = useUserStore((state) => state.user);
+  const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const isActive = (path) => path.split('/')[1] === pathname.split('/')[1];
@@ -25,9 +26,10 @@ const Footer = () => {
           key={nav.name}
           className={`${
             user ? 'w-1/4' : 'w-1/3'
-          } p-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-300 active:scale-95 ${
+          } p-2 rounded-xl flex flex-col items-center gap-0.5 transition duration-300 ${
             isActive(nav.path) ? 'bg-indigo-100' : ''
           }`}
+          onClick={() => navigate(nav.path)}
         >
           <nav.icon className="w-5 h-5" />
           <p className="text-sm md:text-base font-semibold">{nav.name}</p>
