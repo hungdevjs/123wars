@@ -32,7 +32,7 @@ const Footer = () => {
           onClick={() => navigate(nav.path)}
         >
           <nav.icon className="w-5 h-5" />
-          <p className="text-sm md:text-base font-semibold">{nav.name}</p>
+          <p className="text-sm md:text-base font-medium">{nav.name}</p>
         </button>
       ))}
     </div>
