@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import useAuthStore from '../stores/auth.store';
 import environments from '../utils/environments';
+import { getToken } from '../utils/storage';
 
 const { BACKEND_URL } = environments;
 
@@ -14,7 +14,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    const token = useAuthStore.getState().accessToken;
+    const token = getToken();
     if (token) {
       config.headers.authorization = `Bearer ${token}`;
     }
@@ -33,7 +33,9 @@ api.interceptors.response.use(
   (err) => {
     console.log({ err });
     const error = (err.response && err.response.data) || err.message;
-    const message = error.startsWith('API error') ? error.replace('API error: ', '') : error;
+    const message = error.startsWith('API error')
+      ? error.replace('API error: ', '')
+      : error;
     throw new Error(message);
   }
 );
