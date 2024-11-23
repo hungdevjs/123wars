@@ -10,7 +10,9 @@ export const client = createThirdwebClient({ clientId: THIRD_WEB_CLIENT_ID });
 
 export const wallets = [
   inAppWallet({
-    providers: ['facebook', 'apple', 'google', 'email', 'telegram', 'x'],
+    auth: {
+      options: ['google'],
+    },
   }),
 ];
 

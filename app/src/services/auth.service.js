@@ -6,4 +6,4 @@ export const getLoginPayload = ({ address, chainId }) =>
 export const validateLoginPayload = (data) =>
   api.post('/api/v1/auth/login', data);
 
-export const validateToken = () => api.get('/api/v1/auth/login/check');
+export const getMe = () => api.get('/api/v1/auth/me');

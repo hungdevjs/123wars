@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "staging": "tristrike-f4344"
+  },
+  "targets": {
+    "tristrike-f4344": {
+      "hosting": {
+        "app-staging": [
+          "tristrike-f4344"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

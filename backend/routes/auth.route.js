@@ -10,6 +10,6 @@ router.get('/login', limiter, controllers.generateLoginPayload);
 
 router.post('/login', limiter, controllers.validateLoginPayload);
 
-router.get('/login/check', limiter, auth, controllers.validateToken);
+router.get('/me', limiter, auth, controllers.getMe);
 
 export default router;

@@ -23,9 +23,11 @@ export const validateLoginPayload = async (req, res) => {
   }
 };
 
-export const validateToken = async (req, res) => {
+export const getMe = async (req, res) => {
   try {
-    return res.sendStatus(200);
+    const { userId } = req;
+    const data = await services.getMe(userId);
+    return res.status(200).send(data);
   } catch (err) {
     console.error(err);
     return res.status(400).send(`API error: ${err.message}`);

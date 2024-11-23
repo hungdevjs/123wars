@@ -8,6 +8,7 @@ const environments = {
   THIRD_WEB_SECRET_KEY: process.env.THIRD_WEB_SECRET_KEY,
   CLIENT_DOMAIN: process.env.CLIENT_DOMAIN,
   ADMIN_PRIVATE_KEY: process.env.ADMIN_PRIVATE_KEY,
+  SERVICE_ACCOUNT: process.env.SERVICE_ACCOUNT,
 };
 
 export default environments;

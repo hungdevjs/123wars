@@ -7,11 +7,10 @@
     "start": "vite --mode production",
     "build": "vite build --mode production",
     "run:development": "vite --mode development",
-    "build:development": "vite build --mode development",
     "run:staging": "vite --mode staging",
-    "build:staging": "vite build --mode staging",
+    "build:staging": "OUTPUT_DIR=../firebase/build/staging/app vite build --mode staging",
     "run:production": "vite --mode production",
-    "build:production": "vite build --mode production",
+    "build:production": "OUTPUT_DIR=../firebase/build/production/app vite build --mode production",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -23,7 +22,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
     "sonner": "^1.5.0",
-    "thirdweb": "5.14.0",
+    "thirdweb": "^5.70.0",
     "zustand": "^5.0.1"
   },
   "devDependencies": {

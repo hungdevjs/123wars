@@ -8,6 +8,7 @@ const middleware = async (req, res, next) => {
     const authResult = await thirdwebAuth.verifyJWT({ jwt: token });
     if (!authResult.valid) throw new Error('API error: Bad credential');
 
+    console.log({ authResult });
     req.userId = authResult.parsedJWT.sub.toLowerCase();
 
     next();

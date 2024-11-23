@@ -1,0 +1,9 @@
+{
+  "name": "firebase",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "deploy:staging": "firebase use staging && firebase deploy --only hosting:app-staging"
+  }
+}

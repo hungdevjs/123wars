@@ -4,9 +4,10 @@ import { client, wallets, chain } from '../configs/thirdweb.config';
 import {
   getLoginPayload as getLoginPayloadAPI,
   validateLoginPayload,
-  validateToken,
+  getMe,
 } from '../services/auth.service';
 import { saveToken, removeToken } from '../utils/storage';
+import useUserStore from '../stores/user.store';
 
 const getLoginPayload = async (params) => {
   const res = await getLoginPayloadAPI({
@@ -23,7 +24,8 @@ const doLogin = async (params) => {
 };
 
 const isLoggedIn = async () => {
-  await validateToken();
+  const res = await getMe();
+  useUserStore.getState().setUser(res.data);
   return true;
 };
 
@@ -35,13 +37,18 @@ const ConnectWalletButton = () => {
       client={client}
       wallets={wallets}
       chain={chain}
-      theme="light"
+      connectModal={{
+        size: 'compact',
+        title: 'Login',
+        showThirdwebBranding: false,
+      }}
       auth={{
         getLoginPayload,
         doLogin,
         isLoggedIn,
         doLogout,
       }}
+      theme="light"
     />
   );
 };
