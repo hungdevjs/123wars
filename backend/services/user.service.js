@@ -4,6 +4,7 @@ export const createUserIfNotExist = async (data) => {
   const { userId, address, email, name, avatar } = data;
   const userRef = firestore.collection('users').doc(address);
   const pointRef = firestore.collection('points').doc(address);
+  const userPlanRef = firestore.collection('user-plans').doc(address);
   const activityRef = firestore.collection('activities').doc();
 
   await firestore.runTransaction(async (transaction) => {
@@ -20,8 +21,16 @@ export const createUserIfNotExist = async (data) => {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    transaction.set(pointRef, { point: 0 });
+    transaction.set(pointRef, { point: 0, rank: '-' });
+    transaction.set(userPlanRef, {
+      trialUsed: false,
+      plan: null,
+      startTime: null,
+      expireTime: null,
+    });
     transaction.set(activityRef, {
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      userId: address,
       user: { userId: address, name, email, avatar },
       type: 'new-account',
       metadata: {},

@@ -1,0 +1,14 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "firebase-admin": "^13.0.1"
+  },
+  "devDependencies": {
+    "env-cmd": "^10.1.0"
+  }
+}

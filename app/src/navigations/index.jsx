@@ -6,12 +6,10 @@ import Home from '../pages/Home';
 import PuzzleRoutes from './PuzzleRoutes';
 import RankRoutes from './RankRoutes';
 import AccountRoutes from './AccountRoutes';
-import useAuth from '../hooks/useAuth';
-import useUser from '../hooks/useUser';
+import useWallet from '../hooks/useWallet';
 
 const Navigations = () => {
-  useUser();
-  const { loading } = useAuth();
+  const { loading } = useWallet();
 
   if (loading) return <SplashScreen />;
 

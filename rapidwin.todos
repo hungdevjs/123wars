@@ -1,17 +1,32 @@
-☐ login uses x, twitter, phone, gmail --> user need to link social
+✔ gmail login, save user info @done(24-11-24 08:28)
 
-☐ claim free eth
+☐ setup pwa
 
-☐ claim free point
+☐ claim
+  ✔ cron job to create reward @done(24-11-24 08:28)
+  ☐ real time claim reward: ui, be
+  ☐ cronjob to send reward
 
 ☐ subscribe
+  ☐ ui/api plans
+  ☐ smart contract to subscribe
+  ☐ api to validate && (listener | cronjob)
+
+☐ leaderboard
+  ☐ cronjob to calculate leaderboard
+  ☐ cronjob to reset leaderboard 
+  ☐ cronjob to send reward
+  ☐ ui leaderboard
+
+☐ activity
+  ☐ ui activities
+  ☐ create activities
+
+☐ account UI
 
 ☐ puzzles
+  ☐ limit player tickets
   ☐ words
   ☐ mines
   ☐ lucky numbers
   ☐ high/low
-
-☐ leaderboard
-
-☐ activity
