@@ -6,7 +6,6 @@ import useUserStore from './user.store';
 
 const useActivityStore = create((set, get) => ({
   activities: [],
-  setActivities: (activities) => set(() => ({ activities })),
   fetch: async () => {
     const userId = useUserStore.getState().user?.id;
     if (!userId) return;

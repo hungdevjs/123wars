@@ -14,7 +14,6 @@ const bgColors = [
 const usePlanStore = create((set, get) => ({
   userPlan: null,
   plans: [],
-  setPlans: (plans) => set(() => ({ plans })),
   fetch: async () => {
     const userId = useUserStore.getState().user?.id;
     if (!userId) return;

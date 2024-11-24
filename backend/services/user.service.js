@@ -18,6 +18,7 @@ export const createUserIfNotExist = async (data) => {
       email,
       name,
       avatar,
+      phone: null,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 

@@ -1,28 +1,36 @@
 ✔ gmail login, save user info @done(24-11-24 08:28)
 
-☐ setup pwa
+☐ account
+  ✔ account ui @done(24-11-24 21:19)
+  ☐ api to verify phone number
+
+☐ subscribe
+  ✔ ui/api plans @done(24-11-24 21:19)
+  ☐ smart contract to subscribe
+  ☐ api to validate && (listener | cronjob)
+  ☐ cronjob to expired
 
 ☐ claim
   ✔ cron job to create reward @done(24-11-24 08:28)
   ☐ real time claim reward: ui, be
   ☐ cronjob to send reward
 
-☐ subscribe
-  ☐ ui/api plans
-  ☐ smart contract to subscribe
-  ☐ api to validate && (listener | cronjob)
+☐ activity
+  ☐ ui activities
+  ☐ create activities
 
 ☐ leaderboard
   ☐ cronjob to calculate leaderboard
   ☐ cronjob to reset leaderboard 
   ☐ cronjob to send reward
-  ☐ ui leaderboard
+  ☐ ui leaderboard, count down
 
-☐ activity
-  ☐ ui activities
-  ☐ create activities
+--- end MVP ---
 
-☐ account UI
+☐ setup pwa
+
+☐ new feed
+  ☐ show all activities / rewards left
 
 ☐ puzzles
   ☐ limit player tickets

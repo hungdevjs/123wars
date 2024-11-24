@@ -33,7 +33,7 @@ const Plan = () => {
 
   return (
     <div className="h-full overflow-y-auto px-2 flex flex-col gap-4">
-      <p className="font-medium text-center">
+      <p className="text-center">
         Subscribe to a plan and get 48 chances daily to claim ETH and point
         rewards dropped at random times — be the fastest and win!
       </p>
