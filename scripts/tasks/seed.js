@@ -59,6 +59,7 @@ const seed = async () => {
   console.log('creating round reward time');
   await firestore.collection('round-reward-time').doc('1').set({
     nextTimeRewardGenerated: admin.firestore.FieldValue.serverTimestamp(),
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   });
   console.log('created round reward time');
 
