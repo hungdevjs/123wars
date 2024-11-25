@@ -37,9 +37,3 @@ export const validateLoginPayload = async (data) => {
 
   return token;
 };
-
-export const getMe = async (userId) => {
-  const user = await firestore.collection('users').doc(userId).get();
-
-  return { id: user.id, ...user.data() };
-};

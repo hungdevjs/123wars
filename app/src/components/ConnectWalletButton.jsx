@@ -4,8 +4,8 @@ import { client, wallets, chain } from '../configs/thirdweb.config';
 import {
   getLoginPayload as getLoginPayloadAPI,
   validateLoginPayload,
-  getMe,
 } from '../services/auth.service';
+import { getMe } from '../services/user.service';
 import { saveToken, removeToken } from '../utils/storage';
 import useUserStore from '../stores/user.store';
 

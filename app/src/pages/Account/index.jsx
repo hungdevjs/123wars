@@ -1,14 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import {
   IconArrowRight,
   IconR,
   IconRank,
   IconCheck,
+  IconLoading,
 } from '../../components/Icons';
 import usePointStore from '../../stores/point.store';
 import useUserStore from '../../stores/user.store';
+import { validatePhoneNumber } from '../../services/user.service';
 
 const navs = [
   { name: 'Account plan', path: '/account/plan' },
@@ -18,9 +21,23 @@ const navs = [
 const Account = () => {
   const navigate = useNavigate();
   const user = useUserStore((state) => state.user);
+  const setUser = useUserStore((state) => state.setUser);
   const point = usePointStore((state) => state.point);
   const rank = usePointStore((state) => state.rank);
   const fetch = usePointStore((state) => state.fetch);
+  const [loading, setLoading] = useState(false);
+
+  const verifyPhone = async () => {
+    setLoading(true);
+    try {
+      const res = await validatePhoneNumber();
+      setUser({ ...user, phone: res.data });
+      toast.success('Verified phone number');
+    } catch (err) {
+      toast.error(err.message);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
     if (user?.id) {
@@ -66,9 +83,15 @@ const Account = () => {
           ) : (
             <button
               type="button"
-              className="justify-center rounded-lg bg-blue-500 px-2 py-1 text-sm text-white transition duration-300 active:bg-blue-700 disabled:opacity-60"
+              disabled={loading}
+              className="justify-center rounded-lg bg-blue-500 p-1 w-14 h-6 flex justify-center text-xs text-white transition duration-300 active:bg-blue-700 disabled:opacity-60"
+              onClick={verifyPhone}
             >
-              Verify
+              {loading ? (
+                <IconLoading className="animate-spin w-4 h-4" />
+              ) : (
+                'Verify'
+              )}
             </button>
           )}
         </div>

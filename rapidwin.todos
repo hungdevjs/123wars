@@ -6,7 +6,7 @@
 
 ☐ subscribe
   ✔ ui/api plans @done(24-11-24 21:19)
-  ☐ smart contract to subscribe
+  ✔ smart contract to subscribe @done(24-11-25 21:23)
   ☐ api to validate && (listener | cronjob)
   ☐ cronjob to expired
 
@@ -25,9 +25,10 @@
   ☐ cronjob to send reward
   ☐ ui leaderboard, count down
 
---- end MVP ---
-
 ☐ setup pwa
+☐ setup new domain
+
+--- end MVP ---
 
 ☐ new feed
   ☐ show all activities / rewards left

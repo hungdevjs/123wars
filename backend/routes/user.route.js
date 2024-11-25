@@ -2,12 +2,12 @@ import { Router } from 'express';
 
 import auth from '../middlewares/auth.middleware.js';
 import limiter from '../middlewares/rateLimit.middleware.js';
-import * as controllers from '../controllers/auth.controller.js';
+import * as controllers from '../controllers/user.controller.js';
 
 const router = Router();
 
-router.get('/login', limiter, controllers.generateLoginPayload);
+router.get('/me', limiter, auth, controllers.getMe);
 
-router.post('/login', limiter, controllers.validateLoginPayload);
+router.put('/me/phone', limiter, auth, controllers.validatePhoneNumber);
 
 export default router;
