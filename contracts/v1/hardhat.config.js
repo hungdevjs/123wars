@@ -64,6 +64,7 @@ module.exports = {
     apiKey: {
       base_mainnet: secrets.base.ethScan,
       base_sepolia: secrets.baseSepolia.ethScan,
+      baseSepolia: secrets.baseSepolia.ethScan,
     },
     customChains: [
       {

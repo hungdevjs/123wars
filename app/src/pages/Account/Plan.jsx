@@ -1,6 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 import { IconCrypto } from '../../components/Icons';
+import PlanConfirmModal from './components/PlanConfirmModal';
 import usePlanStore from '../../stores/plan.store';
 import useUserStore from '../../stores/user.store';
 import { formatDate } from '../../utils/strings';
@@ -10,6 +12,7 @@ const Plan = () => {
   const userPlan = usePlanStore((state) => state.userPlan);
   const plans = usePlanStore((state) => state.plans);
   const fetch = usePlanStore((state) => state.fetch);
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
   useEffect(() => {
     fetch();
@@ -64,12 +67,17 @@ const Plan = () => {
               type="button"
               disabled={plan.id === userPlanId && !expired}
               className="w-full justify-center rounded-lg bg-blue-500 px-3 py-2 text-sm font-semibold text-white transition duration-300 active:bg-blue-700 disabled:opacity-60"
+              onClick={() => setSelectedPlan(plan)}
             >
               {buttonText(plan)}
             </button>
           </div>
         ))}
       </div>
+      <PlanConfirmModal
+        plan={selectedPlan}
+        close={() => setSelectedPlan(null)}
+      />
     </div>
   );
 };

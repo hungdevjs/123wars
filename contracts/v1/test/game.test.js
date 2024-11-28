@@ -4,7 +4,7 @@ const { ethers } = require('hardhat');
 const { loadFixture } = require('@nomicfoundation/hardhat-network-helpers');
 const { expect } = require('chai');
 require('chai').use(require('chai-as-promised')).should();
-const { parseEther, formatEther, ethers: nativeEthers } = require('ethers');
+const { parseEther, ethers: nativeEthers } = require('ethers');
 
 const plans = [
   { id: '1', priceInEth: 0.001 },

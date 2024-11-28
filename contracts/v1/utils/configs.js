@@ -3,6 +3,7 @@ const secrets = require('../secrets.json');
 
 const { ENVIRONMENT } = environments;
 
-const configs = ENVIRONMENT === 'production' ? secrets.blast : secrets.blastSepolia;
+const configs =
+  ENVIRONMENT === 'production' ? secrets.base : secrets.baseSepolia;
 
 module.exports = configs;

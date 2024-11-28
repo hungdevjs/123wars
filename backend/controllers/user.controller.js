@@ -22,3 +22,16 @@ export const validatePhoneNumber = async (req, res) => {
     return res.status(400).send(`API error: ${err.message}`);
   }
 };
+
+export const validateGameTransaction = async (req, res) => {
+  try {
+    const { userId } = req;
+    const { transactionHash } = req.body;
+    await services.validateGameTransaction({ userId, transactionHash });
+
+    return res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    return res.status(400).send(`API error: ${err.message}`);
+  }
+};

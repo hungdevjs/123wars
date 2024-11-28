@@ -1,13 +1,13 @@
 ✔ gmail login, save user info @done(24-11-24 08:28)
 
-☐ account
+✔ account @done(24-11-25 21:54)
   ✔ account ui @done(24-11-24 21:19)
-  ☐ api to verify phone number
+  ✔ api to verify phone number @done(24-11-25 21:54)
 
 ☐ subscribe
   ✔ ui/api plans @done(24-11-24 21:19)
   ✔ smart contract to subscribe @done(24-11-25 21:23)
-  ☐ api to validate && (listener | cronjob)
+  ☐ api to validate && listener && cronjob
   ☐ cronjob to expired
 
 ☐ claim

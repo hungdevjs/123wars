@@ -230,16 +230,16 @@ export const IconArrowRight = ({ ...props }) => (
 export const IconArrowLeft = ({ ...props }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:Xlink="http://www.w3.org/1999/xlink"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
     viewBox="0 0 24 24"
     {...props}
   >
     <g>
       <path
         fill="#000000"
-        fill-rule="evenodd"
+        fillRule="evenodd"
         d="M15 4a1 1 0 1 1 1.414 1.414l-5.879 5.879a1 1 0 0 0 0 1.414l5.88 5.879A1 1 0 0 1 15 20l-7.293-7.293a1 1 0 0 1 0-1.414z"
-        clip-rule="evenodd"
+        clipRule="evenodd"
         opacity="1"
         data-original="#000000"
       ></path>
@@ -386,6 +386,86 @@ export const IconLoading = ({ ...props }) => (
           data-original="#4147d5"
         ></circle>
       </g>
+    </g>
+  </svg>
+);
+
+export const IconClose = ({ ...props }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 365.717 365"
+    {...props}
+  >
+    <g>
+      <g fill="#f44336">
+        <path
+          d="M356.34 296.348 69.727 9.734c-12.5-12.5-32.766-12.5-45.247 0L9.375 24.816c-12.5 12.504-12.5 32.77 0 45.25L295.988 356.68c12.504 12.5 32.77 12.5 45.25 0l15.082-15.082c12.524-12.48 12.524-32.75.02-45.25zm0 0"
+          fill="#f44336"
+          opacity="1"
+          data-original="#f44336"
+        ></path>
+        <path
+          d="M295.988 9.734 9.375 296.348c-12.5 12.5-12.5 32.77 0 45.25l15.082 15.082c12.504 12.5 32.77 12.5 45.25 0L356.34 70.086c12.504-12.5 12.504-32.766 0-45.246L341.258 9.758c-12.5-12.524-32.766-12.524-45.27-.024zm0 0"
+          fill="#f44336"
+          opacity="1"
+          data-original="#f44336"
+        ></path>
+      </g>
+    </g>
+  </svg>
+);
+
+export const IconError = ({ ...props }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 24 24"
+    {...props}
+  >
+    <g>
+      <g data-name="Layer 2">
+        <g data-name="Layer 1">
+          <path
+            fill="#cf1f25"
+            d="M23.62 19.05 14.29 2.61a2.56 2.56 0 0 0-4.45 0L.5 19.05a2.56 2.56 0 0 0 2.23 3.82h18.66a2.56 2.56 0 0 0 2.23-3.82z"
+            opacity="1"
+            data-original="#cf1f25"
+          ></path>
+          <path
+            fill="#ffffff"
+            d="M13.22 19.16a1.45 1.45 0 0 1-1 .38 1.49 1.49 0 0 1-1-.37 1.33 1.33 0 0 1-.44-1.05 1.41 1.41 0 0 1 1.43-1.42 1.41 1.41 0 0 1 1 .41 1.36 1.36 0 0 1 .42 1 1.34 1.34 0 0 1-.41 1.05zM13.6 9.64l-.37 4.19A3.37 3.37 0 0 1 13 15a.82.82 0 0 1-.78.48.8.8 0 0 1-.77-.47 4 4 0 0 1-.27-1.23l-.27-4.08c-.05-.81-.08-1.37-.08-1.72a1.7 1.7 0 0 1 .41-1.2 1.42 1.42 0 0 1 1.08-.44A1.12 1.12 0 0 1 13.4 7a3.53 3.53 0 0 1 .26 1.52 11.3 11.3 0 0 1-.06 1.12z"
+            opacity="1"
+            data-original="#ffffff"
+          ></path>
+        </g>
+      </g>
+    </g>
+  </svg>
+);
+
+export const IconSuccess = ({ ...props }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 254000 254000"
+    {...props}
+  >
+    <g>
+      <circle
+        cx="127000"
+        cy="127000"
+        r="127000"
+        fill="#48b02c"
+        opacity="1"
+        data-original="#48b02c"
+      ></circle>
+      <path
+        fill="#ffffff"
+        d="m87344 188938-46448-49713c-6359-6806-5994-17574 812-23933s17574-5993 23933 812l35828 38346 56711-52987c510-477 1043-914 1594-1316l26669-24917c6806-6359 17575-5993 23933 813 6359 6805 5993 17574-812 23933l-81454 76105-87-93-28176 26326-12503-13382z"
+        opacity="1"
+        data-original="#ffffff"
+      ></path>
     </g>
   </svg>
 );
