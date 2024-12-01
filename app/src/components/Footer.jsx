@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { IconFeed, IconPuzzle, IconRank, IconUser } from './Icons';
+import { IconFeed, IconGame, IconRank, IconUser } from './Icons';
 import useUserStore from '../stores/user.store';
 
 const navs = [
   { name: 'Feed', path: '/', icon: IconFeed },
-  { name: 'Puzzles', path: '/puzzles', icon: IconPuzzle },
+  { name: 'Games', path: '/games', icon: IconGame },
   { name: 'Rank', path: '/rank', icon: IconRank },
   { name: 'Account', path: '/account', icon: IconUser },
 ];

@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import SplashScreen from '../components/SplashScreen';
 import Layout from '../components/Layout';
 import Home from '../pages/Home';
-import PuzzleRoutes from './PuzzleRoutes';
+import GameRoutes from './GameRoutes';
 import RankRoutes from './RankRoutes';
 import AccountRoutes from './AccountRoutes';
 import useWallet from '../hooks/useWallet';
@@ -17,7 +17,7 @@ const Navigations = () => {
     <Layout>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/puzzles/*" element={<PuzzleRoutes />} />
+        <Route path="/games/*" element={<GameRoutes />} />
         <Route path="/rank/*" element={<RankRoutes />} />
         <Route path="/account/*" element={<AccountRoutes />} />
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,14 +1,14 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 
-import Puzzle from '../pages/Puzzle';
+import Game from '../pages/Game';
 
-const PuzzleRoutes = () => {
+const GameRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Puzzle />} />
+      <Route path="/" element={<Game />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
 
-export default PuzzleRoutes;
+export default GameRoutes;

@@ -1,8 +1,6 @@
 import { IconLoading, IconError, IconSuccess } from './Icons';
 import { chain } from '../configs/thirdweb.config';
 
-console.log(chain.blockExplorers);
-
 const TransactionStatus = ({ status }) => {
   if (status.status === 'loading')
     return (
