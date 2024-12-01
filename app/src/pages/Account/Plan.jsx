@@ -23,7 +23,7 @@ const Plan = () => {
     ? formatDate(userPlan.expireTime.toDate())
     : null;
   const expired =
-    userPlan.plan && userPlan.expireTime.toDate().getTime() <= Date.now();
+    userPlan?.plan && userPlan.expireTime.toDate().getTime() <= Date.now();
 
   const buttonText = (plan) => {
     if (plan.id === userPlanId) {

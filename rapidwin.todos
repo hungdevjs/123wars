@@ -4,21 +4,20 @@
   ✔ account ui @done(24-11-24 21:19)
   ✔ api to verify phone number @done(24-11-25 21:54)
 
+☐ cronjob to create new round
+
+☐ claim
+  ✔ cron job to create reward @done(24-12-01 16:40)
+  ☐ cronjob to send reward
+  ☐ real time claim reward: ui, be
+
 ☐ subscribe
   ✔ ui/api plans @done(24-11-24 21:19)
   ✔ smart contract to subscribe @done(24-11-25 21:23)
   ✔ api to validate txn @done(24-11-29 21:21)
   ☐ listeners
   ☐ cronjob to fallback txn
-  ☐ cronjob to create new round
   ✔ cronjob to expired plan @done(24-12-01 16:39)
-
-☐ claim
-  ✔ cron job to create reward @done(24-12-01 16:40)
-  ☐ api claim
-  ☐ ui claim
-  ☐ cronjob to send reward
-  ☐ real time claim reward: ui, be
 
 ☐ activity
   ☐ ui activities
@@ -40,9 +39,12 @@
   ☐ show all activities / rewards left
 
 ☐ games
+  free mode
   ☐ words
   ☐ the less wins
+  ☐ box arena
+
+  pay mode
   ☐ mines
   ☐ lucky numbers
   ☐ high/low
-  ☐ limit player tickets
