@@ -1,5 +1,5 @@
 /* fonts */
-@import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Zen+Dots&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Audiowide&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Zen+Dots&display=swap");
 
 /* tailwindcss */
 @tailwind base;
@@ -17,11 +17,15 @@
   display: none;
 }
 
+img {
+  display: block;
+}
+
 body {
   margin: 0;
   overflow: hidden;
 }
 
 .text-excited {
-  font-family: 'Zen Dots', sans-serif;
+  font-family: "Zen Dots", sans-serif;
 }

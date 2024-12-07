@@ -1,12 +1,12 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from "react-router-dom";
 
-import SplashScreen from '../components/SplashScreen';
-import Layout from '../components/Layout';
-import Home from '../pages/Home';
-import GameRoutes from './GameRoutes';
-import RankRoutes from './RankRoutes';
-import AccountRoutes from './AccountRoutes';
-import useWallet from '../hooks/useWallet';
+import SplashScreen from "../components/SplashScreen";
+import Home from "../pages/Home";
+import History from "../pages/History";
+import Info from "../pages/Info";
+import Swap from "../pages/Swap";
+import Account from "../pages/Account";
+import useWallet from "../hooks/useWallet";
 
 const Navigations = () => {
   const { loading } = useWallet();
@@ -14,15 +14,14 @@ const Navigations = () => {
   if (loading) return <SplashScreen />;
 
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/games/*" element={<GameRoutes />} />
-        <Route path="/rank/*" element={<RankRoutes />} />
-        <Route path="/account/*" element={<AccountRoutes />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Layout>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/history" element={<History />} />
+      <Route path="/info" element={<Info />} />
+      <Route path="/account" element={<Account />} />
+      <Route path="/swap" element={<Swap />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 };
 

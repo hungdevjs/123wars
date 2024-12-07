@@ -1,13 +1,13 @@
-import { ConnectButton } from 'thirdweb/react';
+import { ConnectButton } from "thirdweb/react";
 
-import { client, wallets, chain } from '../configs/thirdweb.config';
+import { client, wallets, chain } from "../configs/thirdweb.config";
 import {
   getLoginPayload as getLoginPayloadAPI,
   validateLoginPayload,
-} from '../services/auth.service';
-import { getMe } from '../services/user.service';
-import { saveToken, removeToken } from '../utils/storage';
-import useUserStore from '../stores/user.store';
+} from "../services/auth.service";
+import { getMe } from "../services/user.service";
+import { saveToken, removeToken } from "../utils/storage";
+import useUserStore from "../stores/user.store";
 
 const getLoginPayload = async (params) => {
   const res = await getLoginPayloadAPI({
@@ -38,8 +38,8 @@ const ConnectWalletButton = () => {
       wallets={wallets}
       chain={chain}
       connectModal={{
-        size: 'compact',
-        title: 'Login',
+        size: "compact",
+        title: "Login",
         showThirdwebBranding: false,
       }}
       auth={{
@@ -49,6 +49,17 @@ const ConnectWalletButton = () => {
         doLogout,
       }}
       theme="light"
+      connectButton={{
+        label: "Sign in",
+        style: { borderRadius: "40px" },
+      }}
+      supportedTokens={["0x9D6aB093065f9514664B6000e5e3344a1230F202"]}
+      detailsButton={{
+        displayBalanceToken: {
+          [chain.id]: "0x9D6aB093065f9514664B6000e5e3344a1230F202",
+        },
+        style: { borderRadius: "40px" },
+      }}
     />
   );
 };
