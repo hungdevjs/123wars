@@ -7,11 +7,15 @@ import Info from "../pages/Info";
 import Swap from "../pages/Swap";
 import Account from "../pages/Account";
 import useWallet from "../hooks/useWallet";
+import useSystemStore from "../stores/system.store";
 
 const Navigations = () => {
   const { loading } = useWallet();
+  const system = useSystemStore((state) => state.system);
+  const activeRound = useSystemStore((state) => state.activeRound);
 
-  if (loading) return <SplashScreen />;
+  const isLoading = loading || !system || !activeRound;
+  if (isLoading) return <SplashScreen />;
 
   return (
     <Routes>

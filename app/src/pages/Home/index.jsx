@@ -1,13 +1,17 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import ConnectWalletButton from "../../components/ConnectWalletButton";
 import {
   IconCoin,
+  IconGoldMedal,
   IconHistory,
   IconInfo,
+  IconSilverMedal,
   IconSwap,
   IconUser,
 } from "../../components/Icons";
+import BidConfirmation from "./components/BidConfirmation";
 import useSystemStore from "../../stores/system.store";
 import useUserStore from "../../stores/user.store";
 import {
@@ -17,10 +21,13 @@ import {
 } from "../../utils/strings";
 
 const Home = () => {
-  const sytem = useSystemStore((state) => state.system);
+  const navigate = useNavigate();
+  const system = useSystemStore((state) => state.system);
   const activeRound = useSystemStore((state) => state.activeRound);
   const user = useUserStore((state) => state.user);
   const [time, setTime] = useState("-- : -- : --");
+  const [amount, setAmount] = useState(0);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
 
   const interval = useRef();
   const removeInterval = () => {
@@ -52,6 +59,21 @@ const Home = () => {
     }
   };
 
+  const { bidStep } = system;
+  const { id, prize, first, second, numberOfParticipants, status } =
+    activeRound;
+
+  const min = activeRound.first
+    ? activeRound.first.amount + bidStep
+    : system.bidStep;
+  const correctAmount = () => {
+    if (min > amount) {
+      setAmount(min);
+    }
+  };
+
+  const formattedAmount = Number(amount).toLocaleString();
+
   useEffect(() => {
     removeInterval();
 
@@ -62,9 +84,9 @@ const Home = () => {
     return () => removeInterval();
   }, [activeRound]);
 
-  if (!activeRound) return null;
-
-  const { id, prize, winner, numberOfParticipants, status } = activeRound;
+  useEffect(() => {
+    correctAmount();
+  }, [min]);
 
   return (
     <div className="h-svh overflow-y-auto flex flex-col bg-black">
@@ -73,38 +95,70 @@ const Home = () => {
           <p className="font-medium">Round #{id}</p>
           <ConnectWalletButton />
         </div>
-        {!!winner && (
-          <div>
-            <div className="px-4 py-3 rounded-3xl bg-orange-500 flex items-center justify-between">
-              <p className="text-sm font-medium">
-                {winner.username || formatAddress(winner.address)}{" "}
-                <span className="font-semibold text-orange-900">
-                  at {formatDate(winner.createdAt.toDate(), "HH:mm")}
-                </span>
-              </p>
+        <div className="rounded-lg h-20 border border-gray-300 overflow-hidden">
+          {!!first && (
+            <div className="h-10 bg-green-400 px-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <IconGoldMedal className="w-5 h-5" />
+                <p className="text-sm font-medium">
+                  {first.username || formatAddress(first.address, 5)}{" "}
+                  <span className="font-semibold text-orange-900">
+                    at {formatDate(first.createdAt.toDate(), "HH:mm")}
+                  </span>
+                </p>
+              </div>
               <div className="flex items-center gap-1">
                 <IconCoin className="w-5 h-5" />
-                <p className="font-bold">{winner.amount.toLocaleString()}</p>
+                <p className="font-bold">{first.amount.toLocaleString()}</p>
               </div>
             </div>
-          </div>
-        )}
+          )}
+          {!!second && (
+            <div className="h-10 bg-green-100 px-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <IconSilverMedal className="w-5 h-5" />
+                <p className="text-sm font-medium">
+                  {second.username || formatAddress(second.address, 5)}{" "}
+                  <span className="font-semibold text-orange-900">
+                    at {formatDate(second.createdAt.toDate(), "HH:mm")}
+                  </span>
+                </p>
+              </div>
+              <div className="flex items-center gap-1">
+                <IconCoin className="w-5 h-5" />
+                <p className="font-bold">{second.amount.toLocaleString()}</p>
+              </div>
+            </div>
+          )}
+        </div>
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <div className="flex justify-between items-start">
             <div className="flex flex-col gap-2">
-              <button className="rounded-xl p-2 bg-black transition duration-300 active:scale-95">
+              <button
+                className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
+                onClick={() => navigate("/swap")}
+              >
                 <IconSwap className="w-8 h-8" />
               </button>
-              <button className="rounded-xl p-2 bg-black transition duration-300 active:scale-95">
+              <button
+                className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
+                onClick={() => navigate("/history")}
+              >
                 <IconHistory className="w-8 h-8" />
               </button>
             </div>
             <IconCoin className="w-1/2 aspect-square" />
             <div className="flex flex-col gap-2">
-              <button className="rounded-xl p-2 bg-black transition duration-300 active:scale-95">
+              <button
+                className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
+                onClick={() => navigate("/account")}
+              >
                 <IconUser className="w-8 h-8" />
               </button>
-              <button className="rounded-xl p-2 bg-black transition duration-300 active:scale-95">
+              <button
+                className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
+                onClick={() => navigate("/info")}
+              >
                 <IconInfo className="w-8 h-8" />
               </button>
             </div>
@@ -124,18 +178,42 @@ const Home = () => {
         {status === "open" ? (
           <div className="flex items-center justify-center gap-6">
             <div className="flex items-center gap-2">
-              <button className="w-8 h-8 rounded-full flex items-center justify-center bg-black border border-white text-lg text-white transition duration-300 active:scale-95">
+              <button
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-black border border-white text-lg text-white transition duration-300 active:scale-95 disabled:opacity-50"
+                disabled={!user}
+                onClick={() =>
+                  setAmount((prev) => Math.max(prev - bidStep, min))
+                }
+              >
                 -
               </button>
               <div className="flex items-center gap-1">
                 <IconCoin className="w-5 h-5" />
-                <p className="text-xl font-semibold text-white">1000</p>
+                <input
+                  className="bg-transparent outline-none text-center text-white text-xl font-semibold"
+                  value={formattedAmount}
+                  size={7}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/,/g, "");
+                    if (!/^\d*\.?\d*$/.test(value)) return;
+                    setAmount(value);
+                  }}
+                  onBlur={correctAmount}
+                />
               </div>
-              <button className="w-8 h-8 rounded-full flex items-center justify-center bg-black border border-white text-lg text-white transition duration-300 active:scale-95">
+              <button
+                className="w-8 h-8 rounded-full flex items-center justify-center bg-black border border-white text-lg text-white transition duration-300 active:scale-95 disabled:opacity-50"
+                disabled={!user}
+                onClick={() => setAmount((prev) => prev + bidStep)}
+              >
                 +
               </button>
             </div>
-            <button className="rounded-3xl bg-white w-[165px] h-[50px] font-medium transition duration-300 active:scale-95">
+            <button
+              className="rounded-3xl bg-white w-[165px] h-[50px] font-medium transition duration-300 active:scale-95 disabled:opacity-50"
+              disabled={!user}
+              onClick={() => setOpenConfirmation(true)}
+            >
               Offer price
             </button>
           </div>
@@ -150,6 +228,11 @@ const Home = () => {
           </div>
         )}
       </div>
+      <BidConfirmation
+        open={openConfirmation}
+        amount={amount}
+        close={() => setOpenConfirmation(false)}
+      />
     </div>
   );
 };

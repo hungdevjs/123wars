@@ -479,7 +479,6 @@ export const IconSwap = ({ ...props }) => (
         fill="#ffffff"
         opacity="1"
         data-original="#000000"
-        class=""
       ></path>
     </g>
   </svg>
@@ -498,7 +497,6 @@ export const IconUser = ({ ...props }) => (
         fill="#ffffff"
         opacity="1"
         data-original="#000000"
-        class=""
       ></path>
     </g>
   </svg>
@@ -538,4 +536,12 @@ export const IconInfo = ({ ...props }) => (
       ></path>
     </g>
   </svg>
+);
+
+export const IconGoldMedal = ({ ...props }) => (
+  <img src="/icons/gold-medal.png" {...props} />
+);
+
+export const IconSilverMedal = ({ ...props }) => (
+  <img src="/icons/silver-medal.png" {...props} />
 );

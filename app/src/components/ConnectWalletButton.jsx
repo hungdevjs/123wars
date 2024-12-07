@@ -8,6 +8,9 @@ import {
 import { getMe } from "../services/user.service";
 import { saveToken, removeToken } from "../utils/storage";
 import useUserStore from "../stores/user.store";
+import environments from "../utils/environments";
+
+const { TOKEN_ADDRESS } = environments;
 
 const getLoginPayload = async (params) => {
   const res = await getLoginPayloadAPI({
@@ -53,10 +56,10 @@ const ConnectWalletButton = () => {
         label: "Sign in",
         style: { borderRadius: "40px" },
       }}
-      supportedTokens={["0x9D6aB093065f9514664B6000e5e3344a1230F202"]}
+      supportedTokens={[TOKEN_ADDRESS]}
       detailsButton={{
         displayBalanceToken: {
-          [chain.id]: "0x9D6aB093065f9514664B6000e5e3344a1230F202",
+          [chain.id]: TOKEN_ADDRESS,
         },
         style: { borderRadius: "40px" },
       }}
