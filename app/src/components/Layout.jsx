@@ -6,7 +6,7 @@ const Layout = ({ backPath = "/", title, children }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-svh overflow-y-auto p-4 flex flex-col gap-2">
+    <div className="h-svh w-full  bg-white overflow-y-auto p-4 flex flex-col gap-2">
       <div className="relative h-10 flex items-center justify-center">
         <p className="font-medium">{title}</p>
         <button

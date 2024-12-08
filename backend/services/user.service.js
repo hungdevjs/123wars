@@ -1,19 +1,20 @@
-import { parseBytes32String } from '@ethersproject/strings';
+import { formatEther } from "@ethersproject/units";
 
-import admin, { firestore } from '../configs/firebase.config.js';
-import { getUserDetail } from './api.service.js';
-import quickNode from '../configs/quicknode.config.js';
-import { decodeGameTxnLogs } from './contract.service.js';
-import environments from '../utils/environments.js';
+import admin, { firestore } from "../configs/firebase.config.js";
+import { getUserDetail } from "./api.service.js";
+import quickNode from "../configs/quicknode.config.js";
+import { decodeGameTxnLogs } from "./contract.service.js";
+import { updateRound } from "./round.service.js";
+import environments from "../utils/environments.js";
 
-const { GAME_ADDRESS } = environments;
+const { DOLLAR_AUCTION_ADDRESS } = environments;
 
 export const createUserIfNotExist = async (data) => {
   const { userId, address, email, name, avatar } = data;
-  const userRef = firestore.collection('users').doc(address);
-  const pointRef = firestore.collection('points').doc(address);
-  const userPlanRef = firestore.collection('user-plans').doc(address);
-  const activityRef = firestore.collection('activities').doc();
+  const userRef = firestore.collection("users").doc(address);
+  const pointRef = firestore.collection("points").doc(address);
+  const userPlanRef = firestore.collection("user-plans").doc(address);
+  const activityRef = firestore.collection("activities").doc();
 
   await firestore.runTransaction(async (transaction) => {
     const user = await transaction.get(userRef);
@@ -30,7 +31,7 @@ export const createUserIfNotExist = async (data) => {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    transaction.set(pointRef, { point: 0, rank: '-' });
+    transaction.set(pointRef, { point: 0, rank: "-" });
     transaction.set(userPlanRef, {
       trialUsed: false,
       plan: null,
@@ -41,7 +42,7 @@ export const createUserIfNotExist = async (data) => {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       userId: address,
       user: { userId: address, name, email, avatar },
-      type: 'new-account',
+      type: "new-account",
       metadata: {},
     });
   });
@@ -50,7 +51,7 @@ export const createUserIfNotExist = async (data) => {
 };
 
 export const validatePhoneNumber = async ({ userId }) => {
-  const user = await firestore.collection('users').doc(userId).get();
+  const user = await firestore.collection("users").doc(userId).get();
   const { phone } = user.data();
   if (phone) return;
 
@@ -59,13 +60,13 @@ export const validatePhoneNumber = async ({ userId }) => {
   const { linkedAccounts } = userData;
 
   const phoneAccount = linkedAccounts.find(
-    (account) => account.type === 'phone'
+    (account) => account.type === "phone"
   );
-  if (!phoneAccount) throw new Error('API error: Bad request');
+  if (!phoneAccount) throw new Error("API error: Bad request");
 
   const { details } = phoneAccount;
   await firestore
-    .collection('users')
+    .collection("users")
     .doc(userId)
     .update({ phone: details.phone });
 
@@ -73,41 +74,70 @@ export const validatePhoneNumber = async ({ userId }) => {
 };
 
 export const getMe = async (userId) => {
-  const user = await firestore.collection('users').doc(userId).get();
+  const user = await firestore.collection("users").doc(userId).get();
 
   return { id: user.id, ...user.data() };
 };
 
-export const validateGameTransaction = async ({ userId, transactionHash }) => {
-  const user = await firestore.collection('users').doc(userId).get();
-  const { address } = user.data();
+export const validateGameTransaction = async ({ transactionHash }) => {
+  const txRef = firestore.collection("transactions").doc(transactionHash);
+  await firestore.runTransaction(async (transaction) => {
+    const tx = await transaction.get(txRef);
+    if (tx.exists) return;
 
-  const receipt = await quickNode.waitForTransaction(transactionHash);
-  const { from, to, status, logs } = receipt;
-  if (status !== 1) throw new Error('API error: Invalid txn status');
-  if (to.toLowerCase() !== GAME_ADDRESS.toLowerCase())
-    throw new error('API error: Bad credential');
-  if (from.toLowerCase() !== address.toLowerCase())
-    throw new Error('API error: Bad credential');
+    const receipt = await quickNode.waitForTransaction(transactionHash);
+    const { to, status, logs } = receipt;
+    if (status !== 1) throw new Error("API error: Invalid txn status");
+    if (to.toLowerCase() !== DOLLAR_AUCTION_ADDRESS.toLowerCase())
+      throw new error("API error: Bad credential");
 
-  const decodedData = decodeGameTxnLogs('Subscribed', logs[logs.length - 1]);
+    const decodedData = decodeGameTxnLogs("BidCreated", logs[logs.length - 1]);
+    const { roundId, bidder, amount } = decodedData;
 
-  const userAddress = decodedData.addr;
-  const planId = parseBytes32String(decodedData.planId);
-  if (userAddress.toLowerCase() !== address.toLowerCase())
-    throw new Error('API error: Bad credential');
+    let refundAmount;
+    let refundUser;
+    const hasRefund = logs.length === 4;
+    if (hasRefund) {
+      const decodedData = decodeGameTxnLogs("Refund", logs[logs.length - 2]);
+      const { to, amount } = decodedData;
+      const refundUserRef = firestore
+        .collection("users")
+        .where("address", "==", to.toLowerCase())
+        .limit(1);
+      refundUser = await transaction.get(refundUserRef);
+      refundAmount = Number(formatEther(`${amount}`));
+    }
 
-  const plan = await firestore.collection('plans').doc(planId).get();
-  const { days } = plan.data();
-  const now = Date.now();
-  const expireTimeUnix = now + days * 24 * 60 * 60 * 1000;
-  await firestore
-    .collection('user-plans')
-    .doc(userId)
-    .set({
-      plan: { planId: plan.id, ...plan.data() },
-      startTime: admin.firestore.Timestamp.fromMillis(now),
-      expireTime: admin.firestore.Timestamp.fromMillis(expireTimeUnix),
-      trialUsed: true,
-    });
+    const userRef = firestore
+      .collection("users")
+      .where("address", "==", bidder.toLowerCase())
+      .limit(1);
+    const user = await transaction.get(userRef);
+    if (!user.empty) {
+      transaction.set(txRef, {
+        userId: user.docs[0].id,
+        address: bidder.toLowerCase(),
+        type: "bid",
+        roundId: roundId.toString(),
+        amount: Number(formatEther(`${amount}`)),
+        transactionHash,
+      });
+    }
+
+    if (refundUser && !refundUser?.empty) {
+      const refundTxnRef = firestore
+        .collection("transactions")
+        .doc(`${transactionHash}-refund`);
+      transaction.set(refundTxnRef, {
+        userId: refundUser.docs[0].id,
+        address: refundUser.docs[0].data().address,
+        type: "refund",
+        roundId: roundId.toString(),
+        amount: refundAmount,
+        transactionHash,
+      });
+    }
+  });
+
+  await updateRound();
 };

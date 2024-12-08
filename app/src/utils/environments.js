@@ -9,7 +9,6 @@ const environments = {
     .VITE_FIREBASE_MESSAGING_SENDER_ID,
   FIREBASE_APP_ID: import.meta.env.VITE_FIREBASE_APP_ID,
   BACKEND_URL: import.meta.env.VITE_BACKEND_URL,
-  GAME_ADDRESS: import.meta.env.VITE_GAME_ADDRESS,
   DOLLAR_AUCTION_ADDRESS: import.meta.env.VITE_DOLLAR_AUCTION_ADDRESS,
   TOKEN_ADDRESS: import.meta.env.VITE_TOKEN_ADDRESS,
 };

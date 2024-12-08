@@ -1,4 +1,4 @@
-import * as services from '../services/user.service.js';
+import * as services from "../services/user.service.js";
 
 export const getMe = async (req, res) => {
   try {
@@ -25,9 +25,8 @@ export const validatePhoneNumber = async (req, res) => {
 
 export const validateGameTransaction = async (req, res) => {
   try {
-    const { userId } = req;
     const { transactionHash } = req.body;
-    await services.validateGameTransaction({ userId, transactionHash });
+    await services.validateGameTransaction({ transactionHash });
 
     return res.sendStatus(200);
   } catch (err) {

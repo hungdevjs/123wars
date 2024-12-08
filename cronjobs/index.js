@@ -1,13 +1,16 @@
-import generateRewards from './tasks/generateRewards.js';
-import expireUserPlan from './tasks/expireUserPlan.js';
+import cron from "node-cron";
 
-const INTERVAL_GENERATE_REWARDS = 3.7 * 60 * 1000;
-const INTERVAL_EXPIRE_USER_PLAN = 5 * 60 * 1000;
+import { crawRoundData } from "./services/round.service.js";
+import environments from "./utils/environments.js";
+
+const { CRON_CRAW_ROUND_DATA } = environments;
 
 const main = () => {
-  expireUserPlan();
-  setInterval(generateRewards, INTERVAL_GENERATE_REWARDS);
-  setInterval(expireUserPlan, INTERVAL_EXPIRE_USER_PLAN);
+  if (CRON_CRAW_ROUND_DATA) {
+    console.log("1. init job crawRoundData");
+    crawRoundData().catch((err) => console.error(err));
+    cron.schedule(CRON_CRAW_ROUND_DATA, crawRoundData);
+  }
 };
 
 main();

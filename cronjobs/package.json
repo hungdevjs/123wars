@@ -13,11 +13,15 @@
     "start:production": "env-cmd -f .env.production node index"
   },
   "dependencies": {
+    "@ethersproject/contracts": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/units": "^5.7.0",
+    "@ethersproject/wallet": "^5.7.0",
     "dotenv": "^16.4.5",
     "firebase-admin": "^13.0.1",
     "lodash.chunk": "^4.2.0",
-    "moment": "^2.30.1"
+    "moment": "^2.30.1",
+    "node-cron": "^3.0.3"
   },
   "devDependencies": {
     "env-cmd": "^10.1.0",

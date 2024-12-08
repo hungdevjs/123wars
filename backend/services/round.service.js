@@ -2,23 +2,7 @@ import { formatEther } from "@ethersproject/units";
 import { AddressZero } from "@ethersproject/constants";
 
 import admin, { firestore } from "../configs/firebase.config.js";
-import { retry } from "../utils/functions.js";
-import { getGameContract, getWorkerWallet } from "./contract.service.js";
-
-export const getActiveRoundId = async () => {
-  const system = await firestore.collection("system").doc("main").get();
-  const { activeRoundId } = system.data();
-
-  return activeRoundId;
-};
-
-export const getActiveRound = async () => {
-  const activeRoundId = await getActiveRoundId();
-
-  const round = await firestore.collection("rounds").doc(activeRoundId).get();
-
-  return { id: activeRoundId, ...round.data() };
-};
+import { getAdminWallet, getGameContract } from "./contract.service.js";
 
 const getUser = async (address) => {
   const user = await firestore
@@ -31,8 +15,8 @@ const getUser = async (address) => {
 };
 
 export const updateRound = async () => {
-  const workerWallet = getWorkerWallet();
-  const gameContract = getGameContract(workerWallet);
+  const adminWallet = getAdminWallet();
+  const gameContract = getGameContract(adminWallet);
 
   const data = await Promise.all([
     gameContract.roundId(),
@@ -57,19 +41,6 @@ export const updateRound = async () => {
   const roundSecondPosition = data[7];
   const isActive = data[8];
   const numberOfBids = Number(data[9].toString());
-
-  console.log(`========== round data ==========`, {
-    roundId,
-    roundPrize,
-    roundEndTime,
-    nextRoundPrize,
-    roundWinnerBid,
-    roundWinner,
-    roundSecondBid,
-    roundSecondPosition,
-    isActive,
-    numberOfBids,
-  });
 
   const first =
     roundWinner !== AddressZero
@@ -109,33 +80,5 @@ export const updateRound = async () => {
     updatedAt: admin.firestore.FieldValue.serverTimestamp(),
   };
 
-  await roundRef.set(updatedData);
-
-  return { roundId, isActive };
-};
-
-export const crawRoundData = async () => {
-  const { roundId, isActive } = await updateRound();
-
-  if (!isActive) {
-    const workerWallet = getWorkerWallet();
-    const gameContract = getGameContract(workerWallet);
-
-    const { success } = await retry({
-      name: "endRoundAndCreateNewRound",
-      action: gameContract.endRoundAndCreateNewRound,
-    });
-    if (success) {
-      const { roundId: newRoundId } = await updateRound();
-      await firestore
-        .collection("system")
-        .doc("main")
-        .update({ activeRoundId: newRoundId });
-    }
-  } else {
-    await firestore
-      .collection("system")
-      .doc("main")
-      .update({ activeRoundId: roundId });
-  }
+  roundRef.set(updatedData);
 };

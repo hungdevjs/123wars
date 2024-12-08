@@ -24,6 +24,7 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
   uint256 public roundPrize;
   uint256 public roundEndTime;
   uint256 public nextRoundPrize;
+  uint256 public numberOfBids;
 
   uint256 public roundWinnerBid;
   address public roundWinner;
@@ -69,6 +70,7 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
       emit Refund(roundId, roundSecondPosition, refundValue);
     }
 
+    numberOfBids++;
     roundSecondPosition = roundWinner;
     roundSecondBid = roundWinnerBid;
 
@@ -76,7 +78,7 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
     roundWinnerBid = value;
 
     roundEndTime += timeStep;
-    nextRoundPrize += value * nextRoundPrizePercent;
+    nextRoundPrize += (value * nextRoundPrizePercent) / 100_00;
 
     emit BidCreated(roundId, msg.sender, value);
   }
@@ -108,6 +110,7 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
     roundSecondPosition = address(0);
     roundSecondBid = 0;
     nextRoundPrize = minRoundPrize;
+    numberOfBids = 0;
 
     emit RoundCreated(roundId, roundPrize, roundEndTime);
   }

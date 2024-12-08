@@ -5,10 +5,10 @@ import DollarAuction from "../assets/abis/DollarAuction.json" assert { type: "js
 import environments from "../utils/environments.js";
 import quickNode from "../configs/quicknode.config.js";
 
-const { ADMIN_PRIVATE_KEY, DOLLAR_AUCTION_ADDRESS } = environments;
+const { WORKER_PRIVATE_KEY, DOLLAR_AUCTION_ADDRESS } = environments;
 
-export const getAdminWallet = () => {
-  const wallet = new Wallet(ADMIN_PRIVATE_KEY, quickNode);
+export const getWorkerWallet = () => {
+  const wallet = new Wallet(WORKER_PRIVATE_KEY, quickNode);
   return wallet;
 };
 

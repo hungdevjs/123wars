@@ -60,14 +60,14 @@ const Home = () => {
   };
 
   const { bidStep } = system;
-  const { id, prize, first, second, numberOfParticipants, status } =
+  const { id, prize, nextPrize, first, second, numberOfBids, status } =
     activeRound;
 
   const min = activeRound.first
     ? activeRound.first.amount + bidStep
     : system.bidStep;
   const correctAmount = () => {
-    if (min > amount) {
+    if (min > Number(amount)) {
       setAmount(min);
     }
   };
@@ -130,6 +130,13 @@ const Home = () => {
               </div>
             </div>
           )}
+          {!first && !second && (
+            <div className="h-20 flex items-center justify-center">
+              <p className="text-sm text-center italic">
+                Be the first one to bid and win!
+              </p>
+            </div>
+          )}
         </div>
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <div className="flex justify-between items-start">
@@ -164,13 +171,18 @@ const Home = () => {
             </div>
           </div>
           <p className="text-[50px] font-bold text-center">
-            {prize.toLocaleString()} PPX
+            {prize.toLocaleString()}
           </p>
         </div>
         <div>
-          <p className="text-center hover:underline cursor-pointer">
-            {numberOfParticipants} participants
-          </p>
+          <p className="text-center">{numberOfBids} bids</p>
+          <div className="flex items-center justify-center gap-1">
+            <p>
+              <span className="italic">Next prize:</span>{" "}
+              <span className="font-bold">{nextPrize.toLocaleString()}</span>
+            </p>
+            <IconCoin className="w-5 h-5" />
+          </div>
         </div>
       </div>
       <div className="p-4 flex flex-col gap-3">
@@ -182,7 +194,7 @@ const Home = () => {
                 className="w-8 h-8 rounded-full flex items-center justify-center bg-black border border-white text-lg text-white transition duration-300 active:scale-95 disabled:opacity-50"
                 disabled={!user}
                 onClick={() =>
-                  setAmount((prev) => Math.max(prev - bidStep, min))
+                  setAmount((prev) => Math.max(Number(prev) - bidStep, min))
                 }
               >
                 -
@@ -204,7 +216,7 @@ const Home = () => {
               <button
                 className="w-8 h-8 rounded-full flex items-center justify-center bg-black border border-white text-lg text-white transition duration-300 active:scale-95 disabled:opacity-50"
                 disabled={!user}
-                onClick={() => setAmount((prev) => prev + bidStep)}
+                onClick={() => setAmount((prev) => Number(prev) + bidStep)}
               >
                 +
               </button>
