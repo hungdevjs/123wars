@@ -2,7 +2,6 @@ import { formatEther } from "@ethersproject/units";
 import { AddressZero } from "@ethersproject/constants";
 
 import admin, { firestore } from "../configs/firebase.config.js";
-import { retry } from "../utils/functions.js";
 import { date } from "../utils/strings.js";
 import { getGameContract, getWorkerWallet } from "./contract.service.js";
 
@@ -130,34 +129,4 @@ export const updateRound = async () => {
     );
     await statusRef.update({ value: "idle" });
   }
-};
-
-export const checkRoundEnded = async () => {
-  console.log(`========== start checkRoundEnded at ${date()} ==========`);
-
-  try {
-    const workerWallet = getWorkerWallet();
-    const gameContract = getGameContract(workerWallet);
-
-    const isActive = await gameContract.isActive();
-    if (!isActive) {
-      const { success } = await retry({
-        name: "endRoundAndCreateNewRound",
-        action: gameContract.endRoundAndCreateNewRound,
-      });
-      if (success) {
-        await updateRound();
-      }
-    }
-  } catch (err) {
-    console.error(err);
-    console.error(
-      `========== FAILED start checkRoundEnded, err ${err.message} ==========`
-    );
-  }
-};
-
-export const crawRoundData = async () => {
-  await updateRound();
-  await checkRoundEnded();
 };
