@@ -3,7 +3,10 @@ import { AddressZero } from '@ethersproject/constants';
 
 import admin, { firestore } from '../configs/firebase.config.js';
 import { getAdminWallet, getGameContract } from './contract.service.js';
-import { date } from '../../cronjobs/utils/strings.js';
+import { date } from '../utils/strings.js';
+import environments from '../utils/environments.js';
+
+const { NETWORK_ID } = environments;
 
 const getUser = async (address) => {
   const user = await firestore.collection('users').where('address', '==', address).get();
@@ -17,6 +20,7 @@ export const updateRound = async () => {
   try {
     const statusRef = firestore.collection('system').doc('round-craw-status');
     const systemRef = firestore.collection('system').doc('main');
+    const chainRef = firestore.collection('chains').doc(NETWORK_ID);
     const { willUpdate } = await firestore.runTransaction(async (transaction) => {
       const status = await transaction.get(statusRef);
       const { value } = status.data();
@@ -36,29 +40,20 @@ export const updateRound = async () => {
     const adminWallet = getAdminWallet();
     const gameContract = getGameContract(adminWallet);
 
-    const data = await Promise.all([
-      gameContract.roundId(),
-      gameContract.roundPrize(),
-      gameContract.roundEndTime(),
-      gameContract.nextRoundPrize(),
-      gameContract.roundWinnerBid(),
-      gameContract.roundWinner(),
-      gameContract.roundSecondBid(),
-      gameContract.roundSecondPosition(),
-      gameContract.isActive(),
-      gameContract.numberOfBids(),
-    ]);
+    const roundInfo = await gameContract.roundInfo();
 
-    const roundId = `${data[0]}`;
-    const roundPrize = Number(formatEther(data[1]));
-    const roundEndTime = data[2] * 1000;
-    const nextRoundPrize = Number(formatEther(data[3]));
-    const roundWinnerBid = Number(formatEther(data[4]));
-    const roundWinner = data[5];
-    const roundSecondBid = Number(formatEther(data[6]));
-    const roundSecondPosition = data[7];
-    const isActive = data[8];
-    const numberOfBids = Number(data[9].toString());
+    const blockNumber = Number(roundInfo[0].toString());
+    const blockTimestamp = Number(roundInfo[1].toString());
+    const roundId = roundInfo[2].toString();
+    const roundPrize = Number(formatEther(roundInfo[3]));
+    const roundEndTime = Number(roundInfo[4].toString());
+    const nextRoundPrize = Number(formatEther(roundInfo[5]));
+    const roundWinnerBid = Number(formatEther(roundInfo[6]));
+    const roundWinner = roundInfo[7];
+    const roundSecondBid = Number(formatEther(roundInfo[8]));
+    const roundSecondPosition = roundInfo[9];
+    const numberOfBids = Number(roundInfo[10].toString());
+    const isActive = roundInfo[11];
 
     const first = roundWinner !== AddressZero ? await getUser(roundWinner.toLowerCase()) : null;
     const second = roundSecondPosition !== AddressZero ? await getUser(roundSecondPosition.toLowerCase()) : null;
@@ -95,6 +90,7 @@ export const updateRound = async () => {
     await firestore.runTransaction(async (transaction) => {
       transaction.update(statusRef, { value: 'idle' });
       transaction.set(roundRef, updatedData);
+      transaction.set(chainRef, { lastBlock: blockNumber });
       if (isActive) {
         transaction.update(systemRef, { activeRoundId: roundId });
       }

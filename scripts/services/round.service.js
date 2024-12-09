@@ -2,26 +2,11 @@ import { formatEther } from '@ethersproject/units';
 import { AddressZero } from '@ethersproject/constants';
 
 import admin, { firestore } from '../configs/firebase.config.js';
+import { getWorkerWallet, getGameContract } from './contract.service.js';
 import { date } from '../utils/strings.js';
-import { getGameContract, getWorkerWallet } from './contract.service.js';
 import environments from '../utils/environments.js';
 
 const { NETWORK_ID } = environments;
-
-export const getActiveRoundId = async () => {
-  const system = await firestore.collection('system').doc('main').get();
-  const { activeRoundId } = system.data();
-
-  return activeRoundId;
-};
-
-export const getActiveRound = async () => {
-  const activeRoundId = await getActiveRoundId();
-
-  const round = await firestore.collection('rounds').doc(activeRoundId).get();
-
-  return { id: activeRoundId, ...round.data() };
-};
 
 const getUser = async (address) => {
   const user = await firestore.collection('users').where('address', '==', address).get();
