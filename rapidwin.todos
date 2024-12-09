@@ -1,51 +1,7 @@
-✔ gmail login, save user info @done(24-11-24 08:28)
-
-✔ account @done(24-11-25 21:54)
-  ✔ account ui @done(24-11-24 21:19)
-  ✔ api to verify phone number @done(24-11-25 21:54)
-
-☐ cronjob to create new round
-
-☐ claim
-  ✔ cron job to create reward @done(24-12-01 16:40)
-  ☐ cronjob to send reward
-  ☐ real time claim reward: ui, be
-
-☐ subscribe
-  ✔ ui/api plans @done(24-11-24 21:19)
-  ✔ smart contract to subscribe @done(24-11-25 21:23)
-  ✔ api to validate txn @done(24-11-29 21:21)
-  ☐ listeners
-  ☐ cronjob to fallback txn
-  ✔ cronjob to expired plan @done(24-12-01 16:39)
-
-☐ activity
-  ☐ ui activities
-  ☐ create activities
-
-☐ leaderboard
-  ☐ cronjob to calculate leaderboard
-  ☐ cronjob to reset leaderboard 
-  ☐ cronjob to send reward
-  ☐ ui leaderboard, count down
-
-☐ setup pwa
-☐ setup new firebase project
-☐ setup vps
-
---- end MVP ---
-
-☐ new feed
-  ☐ show all activities / rewards left
-
-☐ games
-  free mode
-  ☐ tap to earn
-  ☐ words
-  ☐ the less wins
-  ☐ box arena
-
-  pay mode
-  ☐ mines
-  ☐ lucky numbers
-  ☐ high/low
+☐ new contract, update to use roundInfo function
+☐ update lastBlock in backend validate api, cronjob (can put it in updateRound function)
+☐ create winner transaction
+☐ info page
+☐ account page
+☐ history page
+☐ swap page

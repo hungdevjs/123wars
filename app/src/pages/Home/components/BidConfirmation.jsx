@@ -4,7 +4,6 @@ import { IconClose, IconCoin } from "../../../components/Icons";
 import TransactionStatus from "../../../components/TransactionStatus";
 import useDollarAuction from "../../../hooks/useDollarAuction";
 import { validateTransaction } from "../../../services/user.service";
-import { delay } from "../../../utils/functions";
 
 const BidConfirmation = ({ open, amount, close }) => {
   const [status, setStatus] = useState({
@@ -21,7 +20,6 @@ const BidConfirmation = ({ open, amount, close }) => {
       validateTransaction({ transactionHash }).catch((err) =>
         console.error(err)
       );
-      await delay(2000);
       setStatus({
         status: "success",
         value: "Bid successful",

@@ -1,4 +1,4 @@
-import dollarAuctionListener from "./tasks/dollarAuctionListener.js";
+import dollarAuctionListener from './tasks/dollarAuctionListener.js';
 
 const main = async () => {
   await dollarAuctionListener();

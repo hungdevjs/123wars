@@ -1,15 +1,12 @@
-import { formatEther } from "@ethersproject/units";
-import { AddressZero } from "@ethersproject/constants";
+import { formatEther } from '@ethersproject/units';
+import { AddressZero } from '@ethersproject/constants';
 
-import admin, { firestore } from "../configs/firebase.config.js";
-import { getAdminWallet, getGameContract } from "./contract.service.js";
-import { date } from "../../cronjobs/utils/strings.js";
+import admin, { firestore } from '../configs/firebase.config.js';
+import { getAdminWallet, getGameContract } from './contract.service.js';
+import { date } from '../../cronjobs/utils/strings.js';
 
 const getUser = async (address) => {
-  const user = await firestore
-    .collection("users")
-    .where("address", "==", address)
-    .get();
+  const user = await firestore.collection('users').where('address', '==', address).get();
   if (user.empty) return null;
 
   return { id: user.docs[0].id, ...user.docs[0].data() };
@@ -17,25 +14,25 @@ const getUser = async (address) => {
 
 export const updateRound = async () => {
   console.log(`========== start updateRound at ${date()} ==========`);
-  const statusRef = firestore.collection("system").doc("round-craw-status");
-  const systemRef = firestore.collection("system").doc("main");
-  const { willUpdate } = await firestore.runTransaction(async (transaction) => {
-    const status = await transaction.get(statusRef);
-    const { value } = status.data();
-    if (value !== "idle") return { willUpdate: false };
-
-    transaction.set(statusRef, { value: "processing" });
-    return { willUpdate: true };
-  });
-
-  if (!willUpdate) {
-    console.log(
-      `========== CANCEL start updateRound at ${date()}, has been processing in another process ==========`
-    );
-    return;
-  }
-
   try {
+    const statusRef = firestore.collection('system').doc('round-craw-status');
+    const systemRef = firestore.collection('system').doc('main');
+    const { willUpdate } = await firestore.runTransaction(async (transaction) => {
+      const status = await transaction.get(statusRef);
+      const { value } = status.data();
+      if (value !== 'idle') return { willUpdate: false };
+
+      transaction.set(statusRef, { value: 'processing' });
+      return { willUpdate: true };
+    });
+
+    if (!willUpdate) {
+      console.log(
+        `========== CANCEL start updateRound at ${date()}, has been processing in another process ==========`
+      );
+      return;
+    }
+
     const adminWallet = getAdminWallet();
     const gameContract = getGameContract(adminWallet);
 
@@ -63,15 +60,9 @@ export const updateRound = async () => {
     const isActive = data[8];
     const numberOfBids = Number(data[9].toString());
 
-    const first =
-      roundWinner !== AddressZero
-        ? await getUser(roundWinner.toLowerCase())
-        : null;
-    const second =
-      roundSecondPosition !== AddressZero
-        ? await getUser(roundSecondPosition.toLowerCase())
-        : null;
-    const roundRef = firestore.collection("rounds").doc(roundId);
+    const first = roundWinner !== AddressZero ? await getUser(roundWinner.toLowerCase()) : null;
+    const second = roundSecondPosition !== AddressZero ? await getUser(roundSecondPosition.toLowerCase()) : null;
+    const roundRef = firestore.collection('rounds').doc(roundId);
 
     const now = Date.now();
     const updatedData = {
@@ -97,21 +88,19 @@ export const updateRound = async () => {
               username: second ? second.username : null,
             }
           : null,
-      status: isActive ? "open" : "closed",
+      status: isActive ? 'open' : 'closed',
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
     await firestore.runTransaction(async (transaction) => {
-      transaction.update(statusRef, { value: "idle" });
+      transaction.update(statusRef, { value: 'idle' });
       transaction.set(roundRef, updatedData);
       if (isActive) {
         transaction.update(systemRef, { activeRoundId: roundId });
       }
     });
   } catch (err) {
-    console.error(
-      `========== FAILED updateRound, err ${err.message} ==========`
-    );
-    await statusRef.update({ value: "idle" });
+    console.error(`========== FAILED updateRound, err ${err.message} ==========`);
+    await statusRef.update({ value: 'idle' });
   }
 };

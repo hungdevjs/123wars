@@ -1,13 +1,13 @@
-import { formatEther } from "@ethersproject/units";
-import { AddressZero } from "@ethersproject/constants";
+import { formatEther } from '@ethersproject/units';
+import { AddressZero } from '@ethersproject/constants';
 
-import admin, { firestore } from "../configs/firebase.config.js";
-import { retry } from "../utils/functions.js";
-import { date } from "../utils/strings.js";
-import { getGameContract, getWorkerWallet } from "./contract.service.js";
+import admin, { firestore } from '../configs/firebase.config.js';
+import { retry } from '../utils/functions.js';
+import { date } from '../utils/strings.js';
+import { getGameContract, getWorkerWallet } from './contract.service.js';
 
 export const getActiveRoundId = async () => {
-  const system = await firestore.collection("system").doc("main").get();
+  const system = await firestore.collection('system').doc('main').get();
   const { activeRoundId } = system.data();
 
   return activeRoundId;
@@ -16,16 +16,13 @@ export const getActiveRoundId = async () => {
 export const getActiveRound = async () => {
   const activeRoundId = await getActiveRoundId();
 
-  const round = await firestore.collection("rounds").doc(activeRoundId).get();
+  const round = await firestore.collection('rounds').doc(activeRoundId).get();
 
   return { id: activeRoundId, ...round.data() };
 };
 
 const getUser = async (address) => {
-  const user = await firestore
-    .collection("users")
-    .where("address", "==", address)
-    .get();
+  const user = await firestore.collection('users').where('address', '==', address).get();
   if (user.empty) return null;
 
   return { id: user.docs[0].id, ...user.docs[0].data() };
@@ -33,25 +30,25 @@ const getUser = async (address) => {
 
 export const updateRound = async () => {
   console.log(`========== start updateRound at ${date()} ==========`);
-  const statusRef = firestore.collection("system").doc("round-craw-status");
-  const systemRef = firestore.collection("system").doc("main");
-  const { willUpdate } = await firestore.runTransaction(async (transaction) => {
-    const status = await transaction.get(statusRef);
-    const { value } = status.data();
-    if (value !== "idle") return { willUpdate: false };
-
-    transaction.set(statusRef, { value: "processing" });
-    return { willUpdate: true };
-  });
-
-  if (!willUpdate) {
-    console.log(
-      `========== CANCEL start updateRound at ${date()}, has been processing in another process ==========`
-    );
-    return;
-  }
-
   try {
+    const statusRef = firestore.collection('system').doc('round-craw-status');
+    const systemRef = firestore.collection('system').doc('main');
+    const { willUpdate } = await firestore.runTransaction(async (transaction) => {
+      const status = await transaction.get(statusRef);
+      const { value } = status.data();
+      if (value !== 'idle') return { willUpdate: false };
+
+      transaction.set(statusRef, { value: 'processing' });
+      return { willUpdate: true };
+    });
+
+    if (!willUpdate) {
+      console.log(
+        `========== CANCEL start updateRound at ${date()}, has been processing in another process ==========`
+      );
+      return;
+    }
+
     const workerWallet = getWorkerWallet();
     const gameContract = getGameContract(workerWallet);
 
@@ -79,15 +76,9 @@ export const updateRound = async () => {
     const isActive = data[8];
     const numberOfBids = Number(data[9].toString());
 
-    const first =
-      roundWinner !== AddressZero
-        ? await getUser(roundWinner.toLowerCase())
-        : null;
-    const second =
-      roundSecondPosition !== AddressZero
-        ? await getUser(roundSecondPosition.toLowerCase())
-        : null;
-    const roundRef = firestore.collection("rounds").doc(roundId);
+    const first = roundWinner !== AddressZero ? await getUser(roundWinner.toLowerCase()) : null;
+    const second = roundSecondPosition !== AddressZero ? await getUser(roundSecondPosition.toLowerCase()) : null;
+    const roundRef = firestore.collection('rounds').doc(roundId);
 
     const now = Date.now();
     const updatedData = {
@@ -113,22 +104,20 @@ export const updateRound = async () => {
               username: second ? second.username : null,
             }
           : null,
-      status: isActive ? "open" : "closed",
+      status: isActive ? 'open' : 'closed',
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     };
 
     await firestore.runTransaction(async (transaction) => {
-      transaction.update(statusRef, { value: "idle" });
+      transaction.update(statusRef, { value: 'idle' });
       transaction.set(roundRef, updatedData);
       if (isActive) {
         transaction.update(systemRef, { activeRoundId: roundId });
       }
     });
   } catch (err) {
-    console.error(
-      `========== FAILED updateRound, err ${err.message} ==========`
-    );
-    await statusRef.update({ value: "idle" });
+    console.error(`========== FAILED updateRound, err ${err.message} ==========`);
+    await statusRef.update({ value: 'idle' });
   }
 };
 
@@ -141,8 +130,8 @@ export const checkRoundEnded = async () => {
 
     const isActive = await gameContract.isActive();
     if (!isActive) {
-      const { success } = await retry({
-        name: "endRoundAndCreateNewRound",
+      const { success, data } = await retry({
+        name: 'endRoundAndCreateNewRound',
         action: gameContract.endRoundAndCreateNewRound,
       });
       if (success) {
@@ -151,9 +140,7 @@ export const checkRoundEnded = async () => {
     }
   } catch (err) {
     console.error(err);
-    console.error(
-      `========== FAILED start checkRoundEnded, err ${err.message} ==========`
-    );
+    console.error(`========== FAILED start checkRoundEnded, err ${err.message} ==========`);
   }
 };
 

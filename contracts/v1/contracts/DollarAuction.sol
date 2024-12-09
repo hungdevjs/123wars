@@ -2,17 +2,17 @@
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import '@openzeppelin/contracts/access/AccessControl.sol';
+import '@openzeppelin/contracts/utils/ReentrancyGuard.sol';
 
-import "../libs/SafeTransferLib.sol";
-import "../interfaces/IDollarAuction.sol";
-import "./Paradox.sol";
+import '../libs/SafeTransferLib.sol';
+import '../interfaces/IDollarAuction.sol';
+import './Paradox.sol';
 
 contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
   using SafeTransferLib for address payable;
 
-  bytes32 public constant WORKER_ROLE = keccak256("WORKER_ROLE");
+  bytes32 public constant WORKER_ROLE = keccak256('WORKER_ROLE');
   Paradox public immutable token;
   uint256 public bidStep = 1000 ether;
   uint256 public timeStep = 2 * 60;
@@ -31,11 +31,7 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
   uint256 public roundSecondBid;
   address public roundSecondPosition;
 
-  constructor(
-    address _defaultAdmin,
-    address _workerAddress,
-    address _paradoxTokenAddress
-  ) {
+  constructor(address _defaultAdmin, address _workerAddress, address _paradoxTokenAddress) {
     _grantRole(DEFAULT_ADMIN_ROLE, _defaultAdmin);
     _grantRole(WORKER_ROLE, _workerAddress);
     token = Paradox(_paradoxTokenAddress);
@@ -49,23 +45,37 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
     return block.timestamp <= roundEndTime;
   }
 
+  function roundInfo()
+    public
+    view
+    returns (uint256, uint256, uint256, uint256, uint256, uint256, uint256, address, uint256, address, uint256, bool)
+  {
+    return (
+      block.number,
+      block.timestamp,
+      roundId,
+      roundPrize,
+      roundEndTime,
+      nextRoundPrize,
+      roundWinnerBid,
+      roundWinner,
+      roundSecondBid,
+      roundSecondPosition,
+      numberOfBids,
+      isActive()
+    );
+  }
+
   function bid(uint256 value) external {
-    require(isActive(), "Round ended");
-    require(msg.sender != roundWinner, "Cannot take over yourself");
-    require(
-      value >= roundWinnerBid + bidStep,
-      "Must bid at least 1 bid step more than max bidding"
-    );
-    require(
-      token.allowance(msg.sender, address(this)) >= value,
-      "Not allowance"
-    );
+    require(isActive(), 'Round ended');
+    require(msg.sender != roundWinner, 'Cannot take over yourself');
+    require(value >= roundWinnerBid + bidStep, 'Must bid at least 1 bid step more than max bidding');
+    require(token.allowance(msg.sender, address(this)) >= value, 'Not allowance');
 
     token.burnFrom(msg.sender, value);
 
     if (roundSecondPosition != address(0)) {
-      uint256 refundValue = (roundSecondBid *
-        (100_00 - nextRoundPrizePercent)) / 100_00;
+      uint256 refundValue = (roundSecondBid * (100_00 - nextRoundPrizePercent)) / 100_00;
       token.mint(roundSecondPosition, refundValue);
       emit Refund(roundId, roundSecondPosition, refundValue);
     }
@@ -84,7 +94,7 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
   }
 
   function start() external onlyRole(WORKER_ROLE) {
-    require(roundId == 0, "Contract is started");
+    require(roundId == 0, 'Contract is started');
 
     roundId++;
     roundPrize = minRoundPrize;
@@ -95,7 +105,7 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
   }
 
   function endRoundAndCreateNewRound() external onlyRole(WORKER_ROLE) {
-    require(!isActive(), "Round is not ended");
+    require(!isActive(), 'Round is not ended');
     if (roundWinner != address(0)) {
       token.mint(roundWinner, roundPrize);
     }
@@ -129,12 +139,10 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
     minRoundDuration = _minRoundDuration;
   }
 
-  function withdraw(
-    address to
-  ) external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
-    require(address(this).balance > 0, "Nothing to withdraw");
+  function withdraw(address to) external nonReentrant onlyRole(DEFAULT_ADMIN_ROLE) {
+    require(address(this).balance > 0, 'Nothing to withdraw');
     address payable receiver = payable(to);
-    (bool sent, ) = receiver.call{value: address(this).balance}("");
-    require(sent, "Failed to send Ether");
+    (bool sent, ) = receiver.call{value: address(this).balance}('');
+    require(sent, 'Failed to send Ether');
   }
 }

@@ -1,21 +1,14 @@
-import { StaticJsonRpcProvider } from "@ethersproject/providers";
+import { WebSocketProvider } from '@ethersproject/providers';
 
-import environments from "../utils/environments.js";
+import environments from '../utils/environments.js';
 
-const { QUICKNODE_HTTPS_ENDPOINT, NETWORK_ID } = environments;
+const { QUICKNODE_WSS_ENDPOINT, NETWORK_ID } = environments;
 
-const quickNode = new StaticJsonRpcProvider(
-  QUICKNODE_HTTPS_ENDPOINT,
-  Number(NETWORK_ID)
-);
+const provider = new WebSocketProvider(QUICKNODE_WSS_ENDPOINT, Number(NETWORK_ID));
 
-export default quickNode;
+export default provider;
 
 export const getProvider = () => {
-  const provider = new StaticJsonRpcProvider(
-    QUICKNODE_HTTPS_ENDPOINT,
-    Number(NETWORK_ID)
-  );
-
-  return provider;
+  console.log({ QUICKNODE_WSS_ENDPOINT, NETWORK_ID });
+  return new WebSocketProvider(QUICKNODE_WSS_ENDPOINT, Number(NETWORK_ID));
 };

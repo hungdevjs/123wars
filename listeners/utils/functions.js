@@ -11,9 +11,7 @@ export const retry = async ({ name, action, maxRetry = 10 }) => {
       success = true;
       console.log(`========== SUCCESS ${name}, ${date()} ==========`);
     } catch (err) {
-      console.log(
-        `========== FAILED ${name}, ${date()}, error: ${err.message} ==========`
-      );
+      console.log(`========== FAILED ${name}, ${date()}, error: ${err.message} ==========`);
       console.error(err);
     }
   }
