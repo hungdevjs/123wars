@@ -1,5 +1,5 @@
-☐ new contract, update to use roundInfo function
-☐ update lastBlock in backend validate api, cronjob (can put it in updateRound function)
+✔ new contract, update to use roundInfo function @done(24-12-09 20:31)
+✔ update lastBlock in backend validate api, cronjob (can put it in updateRound function) @done(24-12-09 20:31)
 ☐ create winner transaction
 ☐ info page
 ☐ account page

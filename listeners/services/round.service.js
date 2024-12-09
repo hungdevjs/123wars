@@ -61,7 +61,7 @@ export const updateRound = async () => {
     const blockTimestamp = Number(roundInfo[1].toString());
     const roundId = roundInfo[2].toString();
     const roundPrize = Number(formatEther(roundInfo[3]));
-    const roundEndTime = Number(roundInfo[4].toString());
+    const roundEndTime = Number(roundInfo[4].toString()) * 1000;
     const nextRoundPrize = Number(formatEther(roundInfo[5]));
     const roundWinnerBid = Number(formatEther(roundInfo[6]));
     const roundWinner = roundInfo[7];

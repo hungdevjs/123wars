@@ -9,6 +9,5 @@ const provider = new WebSocketProvider(QUICKNODE_WSS_ENDPOINT, Number(NETWORK_ID
 export default provider;
 
 export const getProvider = () => {
-  console.log({ QUICKNODE_WSS_ENDPOINT, NETWORK_ID });
   return new WebSocketProvider(QUICKNODE_WSS_ENDPOINT, Number(NETWORK_ID));
 };

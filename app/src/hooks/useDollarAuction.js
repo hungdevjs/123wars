@@ -1,11 +1,12 @@
-import { getContract, prepareContractCall, toWei, toEther } from "thirdweb";
-import { useSendTransaction, useReadContract } from "thirdweb/react";
+import { getContract, prepareContractCall, toWei, toEther } from 'thirdweb';
+import { useSendTransaction, useReadContract } from 'thirdweb/react';
 
-import DollarAuction from "../assets/abis/DollarAuction.json";
-import Paradox from "../assets/abis/Paradox.json";
-import { chain, client } from "../configs/thirdweb.config";
-import useWallet from "./useWallet";
-import environments from "../utils/environments";
+import DollarAuction from '../assets/abis/DollarAuction.json';
+import Paradox from '../assets/abis/Paradox.json';
+import { chain, client } from '../configs/thirdweb.config';
+import useWallet from './useWallet';
+import { delay } from '../utils/functions';
+import environments from '../utils/environments';
 
 const { DOLLAR_AUCTION_ADDRESS, TOKEN_ADDRESS } = environments;
 
@@ -28,7 +29,7 @@ const useDollarAuction = () => {
   const { mutateAsync } = useSendTransaction();
   const { data, isLoading, refetch } = useReadContract({
     contract: tokenContract,
-    method: "allowance",
+    method: 'allowance',
     params: [wallet.address, DOLLAR_AUCTION_ADDRESS],
   });
   const approvedTokenAmount = data ? toEther(data) : 0;
@@ -36,21 +37,22 @@ const useDollarAuction = () => {
   const bid = async ({ amount }) => {
     if (isLoading) return;
 
-    if (!amount) throw new Error("Invalid amount");
+    if (!amount) throw new Error('Invalid amount');
     if (amount > approvedTokenAmount) {
       const approveTransaction = prepareContractCall({
         contract: tokenContract,
-        method: "approve",
-        params: [DOLLAR_AUCTION_ADDRESS, toWei("1000000000")],
+        method: 'approve',
+        params: [DOLLAR_AUCTION_ADDRESS, toWei('1000000000')],
       });
 
       await mutateAsync(approveTransaction);
+      await delay(1000);
       refetch();
     }
 
     const transaction = prepareContractCall({
       contract: gameContract,
-      method: "bid",
+      method: 'bid',
       params: [toWei(`${amount}`)],
     });
 

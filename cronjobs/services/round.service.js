@@ -2,7 +2,7 @@ import { formatEther } from '@ethersproject/units';
 import { AddressZero } from '@ethersproject/constants';
 
 import admin, { firestore } from '../configs/firebase.config.js';
-import { retry } from '../utils/functions.js';
+import { retry, delay } from '../utils/functions.js';
 import { date } from '../utils/strings.js';
 import { getGameContract, getWorkerWallet } from './contract.service.js';
 import environments from '../utils/environments.js';
@@ -62,7 +62,7 @@ export const updateRound = async () => {
     const blockTimestamp = Number(roundInfo[1].toString());
     const roundId = roundInfo[2].toString();
     const roundPrize = Number(formatEther(roundInfo[3]));
-    const roundEndTime = Number(roundInfo[4].toString());
+    const roundEndTime = Number(roundInfo[4].toString()) * 1000;
     const nextRoundPrize = Number(formatEther(roundInfo[5]));
     const roundWinnerBid = Number(formatEther(roundInfo[6]));
     const roundWinner = roundInfo[7];
@@ -117,6 +117,39 @@ export const updateRound = async () => {
   }
 };
 
+export const endGame = async () => {
+  const workerWallet = getWorkerWallet();
+  const gameContract = getGameContract(workerWallet);
+
+  const tx = await gameContract.endRoundAndCreateNewRound();
+  const receipt = await tx.wait();
+
+  if (receipt.status !== 1) throw new Error(`endRoundAndCreateNewRound: transaction failed`);
+
+  const { transactionHash } = receipt;
+  const data = {
+    transactionHash,
+  };
+  return data;
+};
+
+export const updateWinner = async ({ winner, winnerBid, prize, roundId, transactionHash }) => {
+  const users = await firestore.collection('users').where('address', '==', winner).get();
+  const user = users.size ? user.docs[0] : null;
+
+  await firestore
+    .collection('transactions')
+    .doc(transactionHash)
+    .set({
+      userId: user ? user.id : null,
+      address: winner,
+      amount: prize,
+      type: 'bid-reward',
+      roundId,
+      bidValue: winnerBid,
+    });
+};
+
 export const checkRoundEnded = async () => {
   console.log(`========== start checkRoundEnded at ${date()} ==========`);
 
@@ -124,13 +157,33 @@ export const checkRoundEnded = async () => {
     const workerWallet = getWorkerWallet();
     const gameContract = getGameContract(workerWallet);
 
-    const isActive = await gameContract.isActive();
+    const roundInfo = await gameContract.roundInfo();
+    const roundId = roundInfo[2].toString();
+    const roundPrize = Number(formatEther(roundInfo[3]));
+    const roundWinnerBid = Number(formatEther(roundInfo[6]));
+    const roundWinner = roundInfo[7];
+    const isActive = roundInfo[11];
+
     if (!isActive) {
       const { success, data } = await retry({
         name: 'endRoundAndCreateNewRound',
-        action: gameContract.endRoundAndCreateNewRound,
+        action: endGame,
       });
       if (success) {
+        if (roundWinner !== AddressZero) {
+          await retry({
+            name: 'updateWinner',
+            action: () =>
+              updateWinner({
+                winner: roundWinner.toLowerCase(),
+                winnerBid: roundWinnerBid,
+                roundId,
+                prize: roundPrize,
+                transactionHash: data.transactionHash,
+              }),
+          });
+        }
+        await delay(10000);
         await updateRound();
       }
     }
@@ -138,9 +191,4 @@ export const checkRoundEnded = async () => {
     console.error(err);
     console.error(`========== FAILED start checkRoundEnded, err ${err.message} ==========`);
   }
-};
-
-export const crawRoundData = async () => {
-  await updateRound();
-  await checkRoundEnded();
 };
