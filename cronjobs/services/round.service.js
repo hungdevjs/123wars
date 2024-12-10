@@ -148,6 +148,7 @@ export const updateWinner = async ({ winner, winnerBid, prize, roundId, transact
       roundId,
       bidValue: winnerBid,
       transactionHash,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 };
 
