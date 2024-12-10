@@ -135,7 +135,7 @@ export const endGame = async () => {
 
 export const updateWinner = async ({ winner, winnerBid, prize, roundId, transactionHash }) => {
   const users = await firestore.collection('users').where('address', '==', winner).get();
-  const user = users.size ? user.docs[0] : null;
+  const user = users.size ? users.docs[0] : null;
 
   await firestore
     .collection('transactions')
