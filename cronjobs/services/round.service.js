@@ -147,6 +147,7 @@ export const updateWinner = async ({ winner, winnerBid, prize, roundId, transact
       type: 'bid-reward',
       roundId,
       bidValue: winnerBid,
+      transactionHash,
     });
 };
 
