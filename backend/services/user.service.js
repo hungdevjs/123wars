@@ -111,6 +111,8 @@ export const validateGameTransaction = async ({ transactionHash }) => {
     if (!user.empty) {
       transaction.set(txRef, {
         userId: user.docs[0].id,
+        username: user.docs[0].data().username,
+        avatar: user.docs[0].data().avatar,
         address: bidder.toLowerCase(),
         type: 'bid',
         roundId: roundId.toString(),
@@ -124,6 +126,8 @@ export const validateGameTransaction = async ({ transactionHash }) => {
       const refundTxnRef = firestore.collection('transactions').doc(`${transactionHash}-refund`);
       transaction.set(refundTxnRef, {
         userId: refundUser.docs[0].id,
+        username: refundUser.docs[0].data().username,
+        avatar: refundUser.docs[0].data().avatar,
         address: refundUser.docs[0].data().address,
         type: 'refund',
         roundId: roundId.toString(),

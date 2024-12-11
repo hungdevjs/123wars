@@ -142,6 +142,8 @@ export const updateWinner = async ({ winner, winnerBid, prize, roundId, transact
     .doc(transactionHash)
     .set({
       userId: user ? user.id : null,
+      username: user ? user.username : null,
+      avatar: user ? user.avatar : null,
       address: winner,
       amount: prize,
       type: 'bid-reward',

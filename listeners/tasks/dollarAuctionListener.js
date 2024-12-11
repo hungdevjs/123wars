@@ -151,6 +151,8 @@ const processBidCreatedEvent = async ({ roundId, address, amount, blockNumber, t
       const user = await transaction.get(userRef);
       transaction.set(txRef, {
         userId: user.empty ? null : user.docs[0].id,
+        username: user.empty ? null : user.docs[0].data().username,
+        avatar: user.empty ? null : user.docs[0].data().avatar,
         address,
         type: 'bid',
         roundId: roundId,
@@ -190,6 +192,8 @@ const processRefundEvent = async ({ roundId, address, amount, blockNumber, trans
       const user = await transaction.get(userRef);
       transaction.set(txRef, {
         userId: user.empty ? null : user.docs[0].id,
+        username: user.empty ? null : user.docs[0].data().username,
+        avatar: user.empty ? null : user.docs[0].data().avatar,
         address,
         type: 'refund',
         roundId: roundId,
