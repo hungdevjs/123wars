@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import ConnectWalletButton from "../../components/ConnectWalletButton";
+import ConnectWalletButton from '../../components/ConnectWalletButton';
 import {
   IconCoin,
   IconGoldMedal,
@@ -10,22 +10,18 @@ import {
   IconSilverMedal,
   IconSwap,
   IconUser,
-} from "../../components/Icons";
-import BidConfirmation from "./components/BidConfirmation";
-import useSystemStore from "../../stores/system.store";
-import useUserStore from "../../stores/user.store";
-import {
-  formatAddress,
-  formatDate,
-  formatTimeDigit,
-} from "../../utils/strings";
+} from '../../components/Icons';
+import BidConfirmation from './components/BidConfirmation';
+import useSystemStore from '../../stores/system.store';
+import useUserStore from '../../stores/user.store';
+import { formatAddress, formatDate, formatTimeDigit } from '../../utils/strings';
 
 const Home = () => {
   const navigate = useNavigate();
   const system = useSystemStore((state) => state.system);
   const activeRound = useSystemStore((state) => state.activeRound);
   const user = useUserStore((state) => state.user);
-  const [time, setTime] = useState("-- : -- : --");
+  const [time, setTime] = useState('-- : -- : --');
   const [amount, setAmount] = useState(0);
   const [openConfirmation, setOpenConfirmation] = useState(false);
 
@@ -45,27 +41,20 @@ const Home = () => {
 
     const diff = endTimeUnix - now;
     if (diff <= 0) {
-      setTime("00 : 00 : 00");
+      setTime('00 : 00 : 00');
     } else {
       const diffInSeconds = diff / 1000;
       const hours = Math.floor(diffInSeconds / 3600);
       const mins = Math.floor((diffInSeconds % 3600) / 60);
       const seconds = Math.round(diffInSeconds % 60);
-      setTime(
-        `${formatTimeDigit(hours)} : ${formatTimeDigit(
-          mins
-        )} : ${formatTimeDigit(seconds)}`
-      );
+      setTime(`${formatTimeDigit(hours)} : ${formatTimeDigit(mins)} : ${formatTimeDigit(seconds)}`);
     }
   };
 
   const { bidStep } = system;
-  const { id, prize, nextPrize, first, second, numberOfBids, status } =
-    activeRound;
+  const { id, prize, nextPrize, first, second, numberOfBids, status } = activeRound;
 
-  const min = activeRound.first
-    ? activeRound.first.amount + bidStep
-    : system.bidStep;
+  const min = activeRound.first ? activeRound.first.amount + bidStep : system.bidStep;
   const correctAmount = () => {
     if (min > Number(amount)) {
       setAmount(min);
@@ -101,9 +90,9 @@ const Home = () => {
               <div className="flex items-center gap-2">
                 <IconGoldMedal className="w-5 h-5" />
                 <p className="text-sm font-medium">
-                  {first.username || formatAddress(first.address, 5)}{" "}
+                  {first.username || formatAddress(first.address, 5)}{' '}
                   <span className="font-semibold text-orange-900">
-                    at {formatDate(first.createdAt.toDate(), "HH:mm")}
+                    at {formatDate(first.createdAt.toDate(), 'HH:mm')}
                   </span>
                 </p>
               </div>
@@ -118,9 +107,9 @@ const Home = () => {
               <div className="flex items-center gap-2">
                 <IconSilverMedal className="w-5 h-5" />
                 <p className="text-sm font-medium">
-                  {second.username || formatAddress(second.address, 5)}{" "}
+                  {second.username || formatAddress(second.address, 5)}{' '}
                   <span className="font-semibold text-orange-900">
-                    at {formatDate(second.createdAt.toDate(), "HH:mm")}
+                    at {formatDate(second.createdAt.toDate(), 'HH:mm')}
                   </span>
                 </p>
               </div>
@@ -132,53 +121,49 @@ const Home = () => {
           )}
           {!first && !second && (
             <div className="h-20 flex items-center justify-center">
-              <p className="text-sm text-center italic">
-                Be the first one to bid and win!
-              </p>
+              <p className="text-sm text-center italic">Be the first one to bid and win!</p>
             </div>
           )}
         </div>
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <div className="flex justify-between items-start">
             <div className="flex flex-col gap-2">
+              {!!user && (
+                <button
+                  className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
+                  onClick={() => navigate('/swap')}>
+                  <IconSwap className="w-8 h-8" />
+                </button>
+              )}
               <button
                 className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
-                onClick={() => navigate("/swap")}
-              >
-                <IconSwap className="w-8 h-8" />
-              </button>
-              <button
-                className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
-                onClick={() => navigate("/history")}
-              >
+                onClick={() => navigate('/history')}>
                 <IconHistory className="w-8 h-8" />
               </button>
             </div>
             <IconCoin className="w-1/2 aspect-square" />
             <div className="flex flex-col gap-2">
+              {!!user && (
+                <button
+                  className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
+                  onClick={() => navigate('/account')}>
+                  <IconUser className="w-8 h-8" />
+                </button>
+              )}
               <button
                 className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
-                onClick={() => navigate("/account")}
-              >
-                <IconUser className="w-8 h-8" />
-              </button>
-              <button
-                className="rounded-xl p-2 bg-black transition duration-300 active:scale-95"
-                onClick={() => navigate("/info")}
-              >
+                onClick={() => navigate('/info')}>
                 <IconInfo className="w-8 h-8" />
               </button>
             </div>
           </div>
-          <p className="text-[50px] font-bold text-center">
-            {prize.toLocaleString()}
-          </p>
+          <p className="text-[50px] font-bold text-center">{prize.toLocaleString()}</p>
         </div>
         <div>
           <p className="text-center">{numberOfBids} bids</p>
           <div className="flex items-center justify-center gap-1">
             <p>
-              <span className="italic">Next prize:</span>{" "}
+              <span className="italic">Next prize:</span>{' '}
               <span className="font-bold">{nextPrize.toLocaleString()}</span>
             </p>
             <IconCoin className="w-5 h-5" />
@@ -187,16 +172,13 @@ const Home = () => {
       </div>
       <div className="p-4 flex flex-col gap-3">
         <p className="text-[50px] font-bold text-center text-white">{time}</p>
-        {status === "open" ? (
+        {status === 'open' ? (
           <div className="flex items-center justify-center gap-6">
             <div className="flex items-center gap-2">
               <button
                 className="w-8 h-8 rounded-full flex items-center justify-center bg-black border border-white text-lg text-white transition duration-300 active:scale-95 disabled:opacity-50"
                 disabled={!user}
-                onClick={() =>
-                  setAmount((prev) => Math.max(Number(prev) - bidStep, min))
-                }
-              >
+                onClick={() => setAmount((prev) => Math.max(Number(prev) - bidStep, min))}>
                 -
               </button>
               <div className="flex items-center gap-1">
@@ -206,7 +188,7 @@ const Home = () => {
                   value={formattedAmount}
                   size={7}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/,/g, "");
+                    const value = e.target.value.replace(/,/g, '');
                     if (!/^\d*\.?\d*$/.test(value)) return;
                     setAmount(value);
                   }}
@@ -216,16 +198,14 @@ const Home = () => {
               <button
                 className="w-8 h-8 rounded-full flex items-center justify-center bg-black border border-white text-lg text-white transition duration-300 active:scale-95 disabled:opacity-50"
                 disabled={!user}
-                onClick={() => setAmount((prev) => Number(prev) + bidStep)}
-              >
+                onClick={() => setAmount((prev) => Number(prev) + bidStep)}>
                 +
               </button>
             </div>
             <button
               className="rounded-3xl bg-white w-[165px] h-[50px] font-medium transition duration-300 active:scale-95 disabled:opacity-50"
               disabled={!user}
-              onClick={() => setOpenConfirmation(true)}
-            >
+              onClick={() => setOpenConfirmation(true)}>
               Offer price
             </button>
           </div>
@@ -240,11 +220,7 @@ const Home = () => {
           </div>
         )}
       </div>
-      <BidConfirmation
-        open={openConfirmation}
-        amount={amount}
-        close={() => setOpenConfirmation(false)}
-      />
+      <BidConfirmation open={openConfirmation} amount={amount} close={() => setOpenConfirmation(false)} />
     </div>
   );
 };

@@ -1,14 +1,11 @@
-import { ConnectButton } from "thirdweb/react";
+import { ConnectButton } from 'thirdweb/react';
 
-import { client, wallets, chain } from "../configs/thirdweb.config";
-import {
-  getLoginPayload as getLoginPayloadAPI,
-  validateLoginPayload,
-} from "../services/auth.service";
-import { getMe } from "../services/user.service";
-import { saveToken, removeToken } from "../utils/storage";
-import useUserStore from "../stores/user.store";
-import environments from "../utils/environments";
+import { client, wallets, chain } from '../configs/thirdweb.config';
+import { getLoginPayload as getLoginPayloadAPI, validateLoginPayload } from '../services/auth.service';
+import { getMe } from '../services/user.service';
+import { saveToken, removeToken } from '../utils/storage';
+import useUserStore from '../stores/user.store';
+import environments from '../utils/environments';
 
 const { TOKEN_ADDRESS } = environments;
 
@@ -32,17 +29,20 @@ const isLoggedIn = async () => {
   return true;
 };
 
-const doLogout = () => removeToken();
+const doLogout = () => {
+  removeToken();
+  useUserStore.getState().setUser(null);
+};
 
-const ConnectWalletButton = () => {
+const ConnectWalletButton = ({ buttonStyle = {} }) => {
   return (
     <ConnectButton
       client={client}
       wallets={wallets}
       chain={chain}
       connectModal={{
-        size: "compact",
-        title: "Login",
+        size: 'compact',
+        title: 'Login',
         showThirdwebBranding: false,
       }}
       auth={{
@@ -53,15 +53,15 @@ const ConnectWalletButton = () => {
       }}
       theme="light"
       connectButton={{
-        label: "Sign in",
-        style: { borderRadius: "40px" },
+        label: 'Sign in',
+        style: { borderRadius: '40px', ...buttonStyle },
       }}
       supportedTokens={[TOKEN_ADDRESS]}
       detailsButton={{
         displayBalanceToken: {
           [chain.id]: TOKEN_ADDRESS,
         },
-        style: { borderRadius: "40px" },
+        style: { borderRadius: '40px', ...buttonStyle },
       }}
     />
   );

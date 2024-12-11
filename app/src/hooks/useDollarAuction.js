@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { getContract, prepareContractCall, toWei, toEther } from 'thirdweb';
 import { useSendTransaction, useReadContract } from 'thirdweb/react';
 
@@ -30,8 +31,15 @@ const useDollarAuction = () => {
   const { data, isLoading, refetch } = useReadContract({
     contract: tokenContract,
     method: 'allowance',
-    params: [wallet.address, DOLLAR_AUCTION_ADDRESS],
+    params: [wallet?.address, DOLLAR_AUCTION_ADDRESS],
   });
+
+  useEffect(() => {
+    if (wallet) {
+      refetch();
+    }
+  }, [wallet]);
+
   const approvedTokenAmount = data ? toEther(data) : 0;
 
   const bid = async ({ amount }) => {

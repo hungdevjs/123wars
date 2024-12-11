@@ -1,3 +1,5 @@
+import ConnectWalletButton from './ConnectWalletButton';
+
 const SplashScreen = () => {
   return (
     <div className="w-svw h-svh bg-black flex items-center justify-center">
@@ -6,6 +8,7 @@ const SplashScreen = () => {
         <div className="h-3 w-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
         <div className="h-3 w-3 bg-white rounded-full animate-bounce"></div>
       </div>
+      <ConnectWalletButton buttonStyle={{ display: 'none' }} />
     </div>
   );
 };

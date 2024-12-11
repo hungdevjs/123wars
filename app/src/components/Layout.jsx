@@ -1,8 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
-import { IconArrowLeft } from "./Icons";
+import { IconArrowLeft } from './Icons';
 
-const Layout = ({ backPath = "/", title, children }) => {
+const Layout = ({ backPath = '/', title, children }) => {
   const navigate = useNavigate();
 
   return (
@@ -11,8 +11,7 @@ const Layout = ({ backPath = "/", title, children }) => {
         <p className="font-medium">{title}</p>
         <button
           className="absolute top-0 left-0 w-10 aspect-square rounded-xl border border-gray-200 flex items-center justify-center transition duration-300 active:scale-95"
-          onClick={() => navigate(backPath)}
-        >
+          onClick={() => navigate(backPath)}>
           <IconArrowLeft className="w-5 h-5" />
         </button>
       </div>

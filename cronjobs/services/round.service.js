@@ -156,6 +156,13 @@ export const checkRoundEnded = async () => {
   console.log(`========== start checkRoundEnded at ${date()} ==========`);
 
   try {
+    const activeRound = await getActiveRound();
+    if (!activeRound) throw new Error('No active round');
+
+    const now = Date.now();
+    const endTimeUnix = activeRound.endTime.toDate().getTime();
+    if (now < endTimeUnix) throw new Error('Check db done, round is active, no need to check on-chain data');
+
     const workerWallet = getWorkerWallet();
     const gameContract = getGameContract(workerWallet);
 

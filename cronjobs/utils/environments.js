@@ -1,4 +1,4 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 const environments = {
@@ -9,6 +9,7 @@ const environments = {
   WORKER_PRIVATE_KEY: process.env.WORKER_PRIVATE_KEY,
   DOLLAR_AUCTION_ADDRESS: process.env.DOLLAR_AUCTION_ADDRESS,
   CRON_CRAW_ROUND_DATA: process.env.CRON_CRAW_ROUND_DATA,
+  CRON_CHECK_ROUND_END: process.env.CRON_CHECK_ROUND_END,
 };
 
 export default environments;
