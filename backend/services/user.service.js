@@ -141,3 +141,14 @@ export const validateGameTransaction = async ({ transactionHash }) => {
   console.log(`========== SUCCESS validateGameTransaction at ${date()}, transactionHash ${transactionHash} ==========`);
   updateRound();
 };
+
+export const checkReward = async ({ userId }) => {
+  const systemRef = firestore.collection('system').doc('main');
+  await firestore.runTransaction(async (transaction) => {
+    const system = await transaction.get(systemRef);
+    const { lastWinner } = system.data();
+
+    if (lastWinner?.userId !== userId) throw new Error('API error: Bad credential');
+    transaction.update(systemRef, { 'lastWinner.checked': true });
+  });
+};

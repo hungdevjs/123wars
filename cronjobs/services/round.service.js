@@ -137,21 +137,36 @@ export const updateWinner = async ({ winner, winnerBid, prize, roundId, transact
   const users = await firestore.collection('users').where('address', '==', winner).get();
   const user = users.size ? users.docs[0] : null;
 
-  await firestore
-    .collection('transactions')
-    .doc(transactionHash)
-    .set({
-      userId: user ? user.id : null,
-      username: user ? user.username : null,
-      avatar: user ? user.avatar : null,
-      address: winner,
-      amount: prize,
-      type: 'bid-reward',
-      roundId,
-      bidValue: winnerBid,
-      transactionHash,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+  const batch = firestore.batch();
+  const txRef = firestore.collection('transactions').doc(transactionHash);
+  const systemRef = firestore.collection('system').doc('main');
+  const roundRef = firestore.collection('rounds').doc(roundId);
+
+  batch.set(txRef, {
+    userId: user ? user.id : null,
+    username: user ? user.username : null,
+    avatar: user ? user.avatar : null,
+    address: winner,
+    amount: prize,
+    type: 'bid-reward',
+    roundId,
+    bidValue: winnerBid,
+    transactionHash,
+    createdAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  batch.set(systemRef, {
+    lastWinner: { roundId, amount, address: winner, userId: user ? user.id : null },
+  });
+
+  batch.set(roundRef, {
+    status: 'completed',
+    winner: address,
+    userId: user ? user.id : null,
+    updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+  });
+
+  await batch.commit();
 };
 
 export const checkRoundEnded = async () => {

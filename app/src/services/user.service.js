@@ -6,3 +6,5 @@ export const validatePhoneNumber = () => api.put('/api/v1/users/me/phone');
 
 export const validateTransaction = ({ transactionHash }) =>
   api.put('/api/v1/users/me/transaction', { transactionHash });
+
+export const checkReward = () => api.put('/api/v1/users/me/reward');

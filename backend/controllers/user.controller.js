@@ -1,4 +1,4 @@
-import * as services from "../services/user.service.js";
+import * as services from '../services/user.service.js';
 
 export const getMe = async (req, res) => {
   try {
@@ -27,6 +27,18 @@ export const validateGameTransaction = async (req, res) => {
   try {
     const { transactionHash } = req.body;
     await services.validateGameTransaction({ transactionHash });
+
+    return res.sendStatus(200);
+  } catch (err) {
+    console.error(err);
+    return res.status(400).send(`API error: ${err.message}`);
+  }
+};
+
+export const checkReward = async (req, res) => {
+  try {
+    const { userId } = req;
+    await services.checkReward({ userId });
 
     return res.sendStatus(200);
   } catch (err) {
