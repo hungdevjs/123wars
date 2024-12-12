@@ -8,7 +8,7 @@ const types = {
   refund: 'refund',
 };
 const getText = ({ name, type, amount, roundId }) => {
-  if (type === 'bid') return `has bid ${amount.toLocaleString()} PPX in round #${roundId}`;
+  if (type === 'bid') return `has bidden ${amount.toLocaleString()} PPX in round #${roundId}`;
   if (type === 'bid-reward') return `has won ${amount.toLocaleString()} PPX in round #${roundId}`;
   if (type === 'refund') return `has been refunded ${amount.toLocaleString()} PPX in round #${roundId}`;
   return '';

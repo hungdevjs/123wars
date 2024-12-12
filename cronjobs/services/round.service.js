@@ -111,6 +111,7 @@ export const updateRound = async () => {
         transaction.update(systemRef, { activeRoundId: roundId });
       }
     });
+    console.log(`========== SUCCESS updateRound at ${date()} ==========`);
   } catch (err) {
     console.error(`========== FAILED updateRound, err ${err.message} ==========`);
     await statusRef.update({ value: 'idle' });
