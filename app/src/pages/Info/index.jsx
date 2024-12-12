@@ -1,6 +1,11 @@
 import Layout from '../../components/Layout';
+import useSystemStore from '../../stores/system.store';
 
 const Info = () => {
+  const system = useSystemStore((state) => state.system);
+
+  const { bidStep, timeStep, minRoundDuration, nextRoundPrizePercent } = system;
+
   return (
     <Layout title="Info">
       <div className="flex flex-col gap-2">
@@ -10,7 +15,9 @@ const Info = () => {
             <span className="font-semibold">AuctionX</span> is a super simple game.
           </p>
           <p>
-            A round starts with a reward amount and <span className="italic font-medium">2 hours</span> of playing time.
+            A round starts with a reward amount and{' '}
+            <span className="italic font-medium">{Math.round(minRoundDuration / (60 * 60))} hours</span> of playing
+            time.
           </p>
           <p>Players bid on the reward, the highest bidder before time runs out receives the reward.</p>
         </div>
@@ -19,19 +26,21 @@ const Info = () => {
         <div className="flex flex-col gap-2">
           <p>
             Every time a player bids, the playing time increases by{' '}
-            <span className="italic font-medium">2 minutes</span>.
+            <span className="italic font-medium">{Math.round(timeStep / 60)} minutes</span>.
           </p>
           <p>
-            A new bid needs to be at least <span className="italic font-medium">1,000 tokens</span> more than the
-            current highest bid.
+            A new bid needs to be at least{' '}
+            <span className="italic font-medium">{bidStep.toLocaleString()} PPX tokens</span> more than the current
+            highest bid.
           </p>
           <p>
             The <span className="italic font-medium">2nd position</span> loses all the token they bid, while the{' '}
             <span className="italic font-medium">3rd position and below</span> receive{' '}
-            <span className="italic font-medium">90%</span> of their token back.
+            <span className="italic font-medium">{(1 - nextRoundPrizePercent) * 100}%</span> of their token back.
           </p>
           <p>
-            Every bid sends <span className="italic font-medium">10%</span> of its to next round reward.
+            Every bid sends <span className="italic font-medium">{nextRoundPrizePercent * 100}%</span> of its to next
+            round reward.
           </p>
         </div>
         <hr />

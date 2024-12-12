@@ -2,12 +2,7 @@ import { IconUser } from '../../../components/Icons';
 import { formatAddress, formatDate } from '../../../utils/strings';
 import { chain } from '../../../configs/thirdweb.config';
 
-const types = {
-  bid: 'bid',
-  'bid-reward': 'won',
-  refund: 'refund',
-};
-const getText = ({ name, type, amount, roundId }) => {
+const getText = ({ type, amount, roundId }) => {
   if (type === 'bid') return `has bidden ${amount.toLocaleString()} PPX in round #${roundId}`;
   if (type === 'bid-reward') return `has won ${amount.toLocaleString()} PPX in round #${roundId}`;
   if (type === 'refund') return `has been refunded ${amount.toLocaleString()} PPX in round #${roundId}`;
@@ -30,7 +25,7 @@ const LogItem = ({ transaction }) => {
   );
 
   const name = username || formatAddress(address, 8);
-  const text = getText({ name, type, amount, roundId });
+  const text = getText({ type, amount, roundId });
 
   return (
     <div className={`p-2 flex items-center gap-2 border-b border-b-gray-200`}>

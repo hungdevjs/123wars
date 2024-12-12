@@ -14,7 +14,7 @@ contract DollarAuction is AccessControl, ReentrancyGuard, IDollarAuction {
 
   bytes32 public constant WORKER_ROLE = keccak256('WORKER_ROLE');
   Paradox public immutable token;
-  uint256 public bidStep = 1000 ether;
+  uint256 public bidStep = 500 ether;
   uint256 public timeStep = 2 * 60;
   uint256 public nextRoundPrizePercent = 10_00;
   uint256 public minRoundPrize = 50000 ether;
