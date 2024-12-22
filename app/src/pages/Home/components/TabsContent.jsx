@@ -1,17 +1,17 @@
 import { useState } from 'react';
 
+import TabGamePanel from './TabGamePanel';
 import TabSwap from './TabSwap';
 import TabHistory from './TabHistory';
-import TabAnalytics from './TabAnalytics';
 
 const tabs = [
-  { key: 'analytics', name: 'Analytics', component: TabAnalytics },
-  { key: 'my-bet', name: 'My bet', component: TabHistory },
-  { key: 'swap', name: 'Swap', component: TabSwap },
+  { key: 'game', name: 'game', component: TabGamePanel },
+  { key: 'my-bet', name: 'my bet', component: TabHistory },
+  { key: 'swap', name: 'swap', component: TabSwap },
 ];
 
 const TabsContent = () => {
-  const [activeTabKey, setActiveTabKey] = useState(localStorage.getItem('active_tab_key') || 'my-bet');
+  const [activeTabKey, setActiveTabKey] = useState(localStorage.getItem('active_tab_key') || 'game');
 
   const activeTab = tabs.find((tab) => tab.key === activeTabKey);
 
@@ -24,14 +24,15 @@ const TabsContent = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="w-full overflow-auto p-2 border-b border-gray-800 flex items-center gap-4">
+      <div className="w-full overflow-auto py-2 border-b border-gray-800 flex items-center gap-4">
         {tabs.map((tab) => {
           const isActive = tab.key === activeTab.key;
           return (
             <div key={tab.key}>
               <p
                 className={`cursor-pointer ${isActive ? 'text-white' : 'text-gray-400'}`}
-                onClick={() => changeTab(tab.key)}>
+                onClick={() => changeTab(tab.key)}
+              >
                 {tab.name}
               </p>
             </div>

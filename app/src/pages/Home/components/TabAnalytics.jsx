@@ -22,9 +22,9 @@ const TabAnalytics = () => {
   ];
 
   return (
-    <div className="h-full p-4 flex flex-col gap-2">
+    <div className="h-full py-2 flex flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <p className="text-white uppercase">winning times</p>
+        <p className="text-white">winning times</p>
         <div className="flex flex-col gap-1">
           {winnerDatas.map((item) => (
             <div key={item.icon} className="flex items-center gap-2">
@@ -42,8 +42,8 @@ const TabAnalytics = () => {
       </div>
 
       <div className="flex flex-col gap-1">
-        <p className="text-white uppercase">recent winners</p>
-        <div className="flex flex-wrap gap-1">
+        <p className="text-white">recent winners</p>
+        <div className="flex flex-wrap gap-2">
           {recentWinners.map((winner, index) => (
             <div key={index} className="w-5">
               <img src={`icons/${winner}.png`} alt="winner" />

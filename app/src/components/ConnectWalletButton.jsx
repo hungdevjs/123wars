@@ -54,14 +54,10 @@ const ConnectWalletButton = ({ buttonStyle = {} }) => {
       theme="dark"
       connectButton={{
         label: 'Sign in',
-        style: { borderRadius: '40px', ...buttonStyle },
+        style: { ...buttonStyle },
       }}
-      supportedTokens={[TOKEN_ADDRESS]}
       detailsButton={{
-        displayBalanceToken: {
-          [chain.id]: TOKEN_ADDRESS,
-        },
-        style: { borderRadius: '40px', ...buttonStyle },
+        style: { ...buttonStyle },
       }}
     />
   );

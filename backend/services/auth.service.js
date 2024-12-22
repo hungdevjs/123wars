@@ -1,4 +1,3 @@
-import { firestore } from '../configs/firebase.config.js';
 import { thirdwebAuth } from '../configs/thirdweb.config.js';
 import { getUserDetail } from './api.service.js';
 import { createUserIfNotExist } from './user.service.js';
@@ -17,18 +16,14 @@ export const validateLoginPayload = async (data) => {
 
   if (!verifiedPayload.valid) throw new Error('Invalid payload');
 
-  // TODO: handle multiple login method here
   const res = await getUserDetail(data.payload.address);
   const user = res.data[0];
 
-  const { userId, walletAddress, email, linkedAccounts } = user;
-  const { name, picture } = linkedAccounts[0]?.details;
+  const { userId, walletAddress, linkedAccounts } = user;
   await createUserIfNotExist({
     userId,
     address: walletAddress.toLowerCase(),
-    email,
-    name,
-    avatar: picture,
+    linkedAccounts,
   });
 
   const token = await thirdwebAuth.generateJWT({

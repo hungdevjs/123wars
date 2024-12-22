@@ -3,8 +3,8 @@
   "printWidth": 120,
   "tabWidth": 2,
   "singleQuote": true,
-  "jsxBracketSameLine": true,
-  "bracketSameLine": true,
+  "jsxBracketSameLine": false,
+  "bracketSameLine": false,
   "trailingComma": "es5",
   "overrides": [
     {

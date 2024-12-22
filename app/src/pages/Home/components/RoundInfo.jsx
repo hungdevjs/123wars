@@ -40,8 +40,9 @@ const RoundInfo = () => {
     return (
       <div className="w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white bg-opacity-80 rounded-lg w-3/4 p-4 flex flex-col items-center justify-center gap-2">
-          <p className="text-center font-medium">Round #{id} starts in</p>
+          <p className="text-center font-medium">round #{id} starts in</p>
           <p className="text-4xl text-center font-semibold">{seconds || 'starting'}</p>
+          <p className="text-center italic">betting is {seconds ? 'open now' : 'closed'}</p>
         </div>
       </div>
     );
@@ -50,7 +51,7 @@ const RoundInfo = () => {
     return (
       <div className="w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white bg-opacity-80 rounded-lg w-3/4 p-4 flex flex-col items-center justify-center gap-2">
-          <p className="text-center font-medium">Round #{id} ended</p>
+          <p className="text-center font-medium">round #{id} ended</p>
           <p className="text-4xl text-center font-semibold">{winner} won!</p>
         </div>
       </div>
