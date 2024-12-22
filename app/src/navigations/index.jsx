@@ -1,6 +1,7 @@
 import SplashScreen from '../components/SplashScreen';
 import PublicRoutes from './PublicRoutes';
 import MainRoutes from './MainRoutes';
+import AppContainer from '../components/AppContainer';
 import useWallet from '../hooks/useWallet';
 import useSystemStore from '../stores/system.store';
 import useUserStore from '../stores/user.store';
@@ -15,9 +16,18 @@ const Navigations = () => {
   const isLoading = loading || !system || !activeRound || !initialized;
   if (isLoading) return <SplashScreen />;
 
-  if (!user) return <PublicRoutes />;
+  if (!user)
+    return (
+      <AppContainer>
+        <PublicRoutes />
+      </AppContainer>
+    );
 
-  return <MainRoutes />;
+  return (
+    <AppContainer>
+      <MainRoutes />
+    </AppContainer>
+  );
 };
 
 export default Navigations;

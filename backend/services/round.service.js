@@ -4,9 +4,12 @@ import { AddressZero } from '@ethersproject/constants';
 import admin, { firestore } from '../configs/firebase.config.js';
 import { getAdminWallet, getGameContract } from './contract.service.js';
 import { date } from '../utils/strings.js';
+import configs from '../configs/game.config.js';
 import environments from '../utils/environments.js';
 
 const { NETWORK_ID } = environments;
+
+const { lockTime } = configs;
 
 const getUser = async (address) => {
   const user = await firestore.collection('users').where('address', '==', address).get();
@@ -101,4 +104,54 @@ export const updateRound = async () => {
     console.error(`========== FAILED updateRound, err ${err.message} ==========`);
     await statusRef.update({ value: 'idle' });
   }
+};
+
+export const getActiveRoundId = async () => {
+  const system = await firestore.collection('system').doc('main').get();
+
+  return system.data().activeRoundId;
+};
+
+export const create = async () => {
+  const activeRoundId = await getActiveRoundId();
+  const roundId = `${Number(activeRoundId) + 1}`;
+
+  const now = Date.now();
+  const batch = firestore.batch();
+
+  const roundRef = firestore.collection('rounds').doc(roundId);
+  const systemRef = firestore.collection('system').doc('main');
+
+  batch.set(roundRef, {
+    status: 'pending',
+    createdAt: admin.firestore.Timestamp.fromMillis(now),
+    startTime: admin.firestore.Timestamp.fromMillis(now + lockTime),
+  });
+
+  batch.update(systemRef, { activeRoundId: roundId });
+
+  await batch.commit();
+};
+
+export const start = async ({ roundId }) => {
+  const round = await firestore.collection('rounds').doc(roundId).get();
+  await round.ref.update({ status: 'open' });
+
+  const startTime = round.data().startTime.toDate().getTime();
+  return { startTime };
+};
+
+export const end = async ({ roundId, winner }) => {
+  const batch = firestore.batch();
+
+  const roundRef = firestore.collection('rounds').doc(roundId);
+  const systemRef = firestore.collection('system').doc('winners');
+
+  const roundData = { status: 'closed', winner, endedAt: admin.firestore.FieldValue.serverTimestamp() };
+  const systemData = { [winner]: admin.firestore.FieldValue.increment(1) };
+
+  batch.update(roundRef, roundData);
+  batch.set(systemRef, systemData, { merge: true });
+
+  await batch.commit();
 };

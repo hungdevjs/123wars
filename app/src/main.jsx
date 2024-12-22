@@ -6,16 +6,13 @@ import { BrowserRouter } from 'react-router-dom';
 
 import './index.css';
 import App from './App.jsx';
-import AppContainer from './components/AppContainer.jsx';
 import WinnerPopup from './components/WinnerPopup.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThirdwebProvider>
       <BrowserRouter>
-        <AppContainer>
-          <App />
-        </AppContainer>
+        <App />
         <WinnerPopup />
         <Toaster />
       </BrowserRouter>

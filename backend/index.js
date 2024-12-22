@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import http from 'http';
+import { Server } from 'socket.io';
 
+import { startRound } from './services/game.service.js';
 import routes from './routes/index.js';
 import errorHandler from './middlewares/errorHandler.middleware.js';
 import environments from './utils/environments.js';
@@ -20,6 +23,12 @@ app.get('/', (req, res) => {
 
 app.use('/api', routes);
 
-app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: '*' } });
+
+global._io = io;
+startRound();
+
+server.listen(PORT, () => console.log(`server is running on port ${PORT}`));
 
 export default app;

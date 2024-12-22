@@ -51,7 +51,7 @@ const ConnectWalletButton = ({ buttonStyle = {} }) => {
         isLoggedIn,
         doLogout,
       }}
-      theme="light"
+      theme="dark"
       connectButton={{
         label: 'Sign in',
         style: { borderRadius: '40px', ...buttonStyle },
