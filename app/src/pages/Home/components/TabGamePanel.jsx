@@ -3,13 +3,15 @@ import { useState } from 'react';
 import useSystemStore from '../../../stores/system.store';
 import useRound from '../../../hooks/useRound';
 import { IconCoin } from '../../../components/Icons';
+import BetConfirmation from './BetConfirmation';
 
 const TabGamePanel = () => {
-  const { recentWinners } = useRound();
+  const { recentWinners, roundBets } = useRound();
   const winners = useSystemStore((state) => state.winners);
   const activeRound = useSystemStore((state) => state.activeRound);
   const [option, setOption] = useState(null);
   const [amount, setAmount] = useState(0);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
 
   const totalWinningTimes = winners.rock + winners.paper + winners.scissors;
   const rockWinningPercentage = totalWinningTimes ? winners.rock / totalWinningTimes : 0;
@@ -34,19 +36,31 @@ const TabGamePanel = () => {
   const toggleOption = (item) => setOption(item === option ? null : item);
 
   const valid =
-    status === 'pending' && ['rock', 'paper', 'scissors'].includes(option) && amount > 0 && !isNaN(Number(amount));
+    status === 'open' && ['rock', 'paper', 'scissors'].includes(option) && amount > 0 && !isNaN(Number(amount));
 
   return (
     <div className="h-full py-2 flex flex-col gap-4">
       <p className="text-white">round #{id}</p>
       <div className="flex flex-col gap-2">
-        <p className="text-white underline">betting</p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between">
+          <p className="text-white underline">betting</p>
+          <div className="flex items-center gap-1">
+            <p className="text-white italic">
+              potential returns: {(Math.max(...Object.values(roundBets)) * 3).toLocaleString()}
+            </p>
+            <IconCoin className="w-3 h-3" />
+          </div>
+        </div>
+        <div className="pt-2 flex items-center gap-2">
           {['rock', 'paper', 'scissors'].map((item) => (
             <div
               key={item}
-              className={`flex-1 p-2 cursor-pointer rounded-lg border ${
-                item === option ? 'border-white bg-indigo-500 bg-opacity-50' : 'border-slate-500'
+              className={`relative flex-1 p-2 cursor-pointer rounded-lg border ${
+                item === option
+                  ? 'border-white bg-indigo-500 bg-opacity-50'
+                  : roundBets[item] > 0
+                  ? 'border-indigo-500'
+                  : 'border-slate-500'
               } flex items-center justify-center gap-2`}
               onClick={() => toggleOption(item)}
             >
@@ -58,6 +72,12 @@ const TabGamePanel = () => {
                   <IconCoin className="w-4 h-4" />
                 </div>
               </div>
+              {roundBets[item] > 0 && (
+                <div className="absolute top-0 right-[8px] -translate-y-1/2 py-0.5 px-2 rounded-lg bg-indigo-500 flex items-center gap-1">
+                  <p className="text-white font-medium text-[9px]">{roundBets[item].toLocaleString()}</p>
+                  <IconCoin className="w-3 h-3" />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -80,6 +100,7 @@ const TabGamePanel = () => {
         <button
           className="w-full transition duration-100 bg-indigo-500 active:bg-indigo-700 disabled:opacity-40 text-white font-medium py-2 px-4 rounded-lg"
           disabled={!valid}
+          onClick={() => setOpenConfirmation(true)}
         >
           bet
         </button>
@@ -116,6 +137,14 @@ const TabGamePanel = () => {
           </div>
         </div>
       </div>
+
+      <BetConfirmation
+        roundId={activeRound.id}
+        amount={amount}
+        option={option}
+        open={openConfirmation}
+        close={() => setOpenConfirmation(false)}
+      />
     </div>
   );
 };

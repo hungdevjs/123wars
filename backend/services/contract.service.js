@@ -1,19 +1,24 @@
 import { Contract } from '@ethersproject/contracts';
 import { Wallet } from '@ethersproject/wallet';
 
-import DollarAuction from '../assets/abis/DollarAuction.json' assert { type: 'json' };
+import War from '../assets/abis/War.json' assert { type: 'json' };
 import environments from '../utils/environments.js';
 import quickNode from '../configs/quicknode.config.js';
 
-const { ADMIN_PRIVATE_KEY, DOLLAR_AUCTION_ADDRESS } = environments;
+const { ADMIN_PRIVATE_KEY, SIGNER_PRIVATE_KEY, GAME_ADDRESS } = environments;
 
 export const getAdminWallet = () => {
   const wallet = new Wallet(ADMIN_PRIVATE_KEY, quickNode);
   return wallet;
 };
 
+export const getSignerWallet = () => {
+  const wallet = new Wallet(SIGNER_PRIVATE_KEY, quickNode);
+  return wallet;
+};
+
 export const getGameContract = (signer) => {
-  const contract = new Contract(DOLLAR_AUCTION_ADDRESS, DollarAuction.abi, signer);
+  const contract = new Contract(GAME_ADDRESS, War.abi, signer);
   return contract;
 };
 

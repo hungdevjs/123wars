@@ -53,7 +53,7 @@ const TabSwap = () => {
                 setAmount(e.target.value);
               }}
             />
-            <div className="flex items-center">
+            <div className="flex items-center gap-1">
               {<icons.left.icon className="w-5 h-5" />}
               <p className="text-white">{icons.left.text}</p>
             </div>
@@ -75,7 +75,7 @@ const TabSwap = () => {
               placeholder="0.0"
               disabled
             />
-            <div className="flex items-center">
+            <div className="flex items-center gap-1">
               {<icons.right.icon className="w-5 h-5" />}
               <p className="text-white">{icons.right.text}</p>
             </div>

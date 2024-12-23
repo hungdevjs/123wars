@@ -5,8 +5,10 @@
   "license": "MIT",
   "scripts": {
     "test": "npx hardhat test",
-    "deploy:test": "npx env-cmd -f .env.stg hardhat run scripts/game.deploy.js --network base_sepolia",
-    "deploy:main": "npx env-cmd -f .env.stg hardhat run scripts/game.deploy.js --network base"
+    "deploy:test:token": "npx env-cmd -f .env.stg hardhat run scripts/1.pitcoin.deploy.js --network base_sepolia",
+    "deploy:test:game": "npx env-cmd -f .env.stg hardhat run scripts/2.war.deploy.js --network base_sepolia",
+    "deploy:main:token": "npx env-cmd -f .env.stg hardhat run scripts/1.pitcoin.deploy.js --network base",
+    "deploy:main:game": "npx env-cmd -f .env.stg hardhat run scripts/2.war.deploy.js --network base"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",

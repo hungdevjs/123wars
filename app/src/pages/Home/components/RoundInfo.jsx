@@ -7,7 +7,7 @@ const RoundInfo = () => {
   const [seconds, setSeconds] = useState('--');
   const interval = useRef();
 
-  const { status, id, startTime, winner } = activeRound;
+  const { status, id, startTime, lockTime, winner } = activeRound;
 
   const clearCountdown = () => {
     if (interval.current) {
@@ -15,9 +15,9 @@ const RoundInfo = () => {
     }
   };
 
-  const countdown = () => {
+  const countdown = (destinationUnixTime) => {
     const now = Date.now();
-    const diff = startTime.toDate().getTime() - now;
+    const diff = destinationUnixTime - now;
 
     if (diff < 0) {
       clearCountdown();
@@ -29,20 +29,34 @@ const RoundInfo = () => {
 
   useEffect(() => {
     clearCountdown();
-    if (status === 'pending') {
-      interval.current = setInterval(countdown, 1000);
+    if (status === 'open') {
+      interval.current = setInterval(() => countdown(lockTime.toDate().getTime()), 1000);
     }
-  }, [status, startTime]);
 
-  if (status === 'open') return null;
+    if (status === 'locked') {
+      interval.current = setInterval(() => countdown(startTime.toDate().getTime()), 1000);
+    }
+  }, [status, startTime, lockTime]);
 
-  if (status === 'pending')
+  if (status === 'processing') return null;
+
+  if (status === 'open')
+    return (
+      <div className="w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white bg-opacity-80 rounded-lg w-3/4 p-4 flex flex-col items-center justify-center gap-2">
+          <p className="text-center font-medium">round #{id} is opening for betting</p>
+          <p className="text-4xl text-center font-semibold">{seconds || 'locked'}</p>
+        </div>
+      </div>
+    );
+
+  if (status === 'locked')
     return (
       <div className="w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
         <div className="bg-white bg-opacity-80 rounded-lg w-3/4 p-4 flex flex-col items-center justify-center gap-2">
           <p className="text-center font-medium">round #{id} starts in</p>
           <p className="text-4xl text-center font-semibold">{seconds || 'starting'}</p>
-          <p className="text-center italic">betting is {seconds ? 'open now' : 'closed'}</p>
+          <p className="text-center italic">betting is locked</p>
         </div>
       </div>
     );

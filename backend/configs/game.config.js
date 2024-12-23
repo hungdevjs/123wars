@@ -5,6 +5,7 @@ const configs = {
   itemTypes: ['rock', 'paper', 'scissors'],
   speed: 1.5,
   size: 20,
+  openTime: 60 * 1000,
   lockTime: 30 * 1000,
 };
 

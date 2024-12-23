@@ -1,15 +1,16 @@
-import { formatEther } from '@ethersproject/units';
+import { formatEther, parseEther } from '@ethersproject/units';
 import { AddressZero } from '@ethersproject/constants';
+import { ethers } from 'ethers';
 
 import admin, { firestore } from '../configs/firebase.config.js';
-import { getAdminWallet, getGameContract } from './contract.service.js';
+import { getAdminWallet, getSignerWallet, getGameContract } from './contract.service.js';
 import { date } from '../utils/strings.js';
 import configs from '../configs/game.config.js';
 import environments from '../utils/environments.js';
 
 const { NETWORK_ID } = environments;
 
-const { lockTime } = configs;
+const { lockTime, openTime } = configs;
 
 const getUser = async (address) => {
   const user = await firestore.collection('users').where('address', '==', address).get();
@@ -112,6 +113,13 @@ export const getActiveRoundId = async () => {
   return system.data().activeRoundId;
 };
 
+export const getActiveRound = async () => {
+  const activeRoundId = await getActiveRoundId();
+  const snapshot = await firestore.collection('rounds').doc(activeRoundId).get();
+
+  return { id: snapshot.id, ...snapshot.data() };
+};
+
 export const create = async () => {
   const activeRoundId = await getActiveRoundId();
   const roundId = `${Number(activeRoundId) + 1}`;
@@ -123,9 +131,10 @@ export const create = async () => {
   const systemRef = firestore.collection('system').doc('main');
 
   batch.set(roundRef, {
-    status: 'pending',
+    status: 'open',
     createdAt: admin.firestore.Timestamp.fromMillis(now),
-    startTime: admin.firestore.Timestamp.fromMillis(now + lockTime),
+    lockTime: admin.firestore.Timestamp.fromMillis(now + openTime),
+    startTime: admin.firestore.Timestamp.fromMillis(now + openTime + lockTime),
   });
 
   batch.update(systemRef, { activeRoundId: roundId });
@@ -133,12 +142,12 @@ export const create = async () => {
   await batch.commit();
 };
 
-export const start = async ({ roundId }) => {
-  const round = await firestore.collection('rounds').doc(roundId).get();
-  await round.ref.update({ status: 'open' });
+export const lock = async ({ roundId }) => {
+  await firestore.collection('rounds').doc(roundId).update({ status: 'locked' });
+};
 
-  const startTime = round.data().startTime.toDate().getTime();
-  return { startTime };
+export const start = async ({ roundId }) => {
+  await firestore.collection('rounds').doc(roundId).update({ status: 'processing' });
 };
 
 export const end = async ({ roundId, winner }) => {
@@ -154,4 +163,29 @@ export const end = async ({ roundId, winner }) => {
   batch.set(systemRef, systemData, { merge: true });
 
   await batch.commit();
+};
+
+export const generateBetSignature = async ({ userId, value, option }) => {
+  const activeRound = await getActiveRound();
+  if (activeRound.status !== 'open') throw new Error('API error: Round is locked');
+
+  const options = {
+    rock: 1,
+    paper: 2,
+    scissors: 3,
+  };
+
+  const user = await firestore.collection('users').doc(userId).get();
+  const { address } = user.data();
+
+  const roundId = Number(activeRound.id);
+  const time = Math.floor(Date.now() / 1000);
+  const types = ['address', 'uint256', 'uint256', 'uint256', 'uint256'];
+  const values = [address, roundId, options[option], parseEther(value.toString()).toString(), time];
+
+  const message = ethers.solidityPackedKeccak256(types, values);
+
+  const signerWallet = getSignerWallet();
+  const signature = await signerWallet.signMessage(ethers.toBeArray(message));
+  return { address, roundId, option: options[option], value, time, signature };
 };

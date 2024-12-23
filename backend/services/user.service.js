@@ -4,11 +4,10 @@ import admin, { firestore } from '../configs/firebase.config.js';
 import { getUserDetail } from './api.service.js';
 import quickNode from '../configs/quicknode.config.js';
 import { decodeGameTxnLogs } from './contract.service.js';
-import { updateRound } from './round.service.js';
 import { date } from '../utils/strings.js';
 import environments from '../utils/environments.js';
 
-const { DOLLAR_AUCTION_ADDRESS } = environments;
+const { GAME_ADDRESS } = environments;
 
 export const createUserIfNotExist = async (data) => {
   const { userId, address, linkedAccounts } = data;
@@ -69,56 +68,45 @@ export const validateGameTransaction = async ({ transactionHash }) => {
     const receipt = await quickNode.waitForTransaction(transactionHash);
     const { to, status, logs } = receipt;
     if (status !== 1) throw new Error('API error: Invalid txn status');
-    if (to.toLowerCase() !== DOLLAR_AUCTION_ADDRESS.toLowerCase()) throw new error('API error: Bad credential');
+    if (to.toLowerCase() !== GAME_ADDRESS.toLowerCase()) throw new Error('API error: Bad credential');
 
-    const decodedData = decodeGameTxnLogs('BidCreated', logs[logs.length - 1]);
-    const { roundId, bidder, amount } = decodedData;
+    const decodedData = decodeGameTxnLogs('BetCreated', logs[logs.length - 1]);
+    const { roundId, option, from, value } = decodedData;
 
-    let refundAmount;
-    let refundUser;
-    const hasRefund = logs.length === 4;
-    if (hasRefund) {
-      const decodedData = decodeGameTxnLogs('Refund', logs[logs.length - 2]);
-      const { to, amount } = decodedData;
-      const refundUserRef = firestore.collection('users').where('address', '==', to.toLowerCase()).limit(1);
-      refundUser = await transaction.get(refundUserRef);
-      refundAmount = Number(formatEther(`${amount}`));
-    }
+    const options = {
+      1: 'rock',
+      2: 'paper',
+      3: 'scissors',
+    };
 
-    const userRef = firestore.collection('users').where('address', '==', bidder.toLowerCase()).limit(1);
+    const userOption = options[option.toString()];
+    const userValue = Number(formatEther(`${value}`));
+
+    const userRef = firestore.collection('users').where('address', '==', from.toLowerCase()).limit(1);
     const user = await transaction.get(userRef);
     if (!user.empty) {
       transaction.set(txRef, {
         userId: user.docs[0].id,
-        username: user.docs[0].data().username,
-        avatar: user.docs[0].data().avatar,
-        address: bidder.toLowerCase(),
-        type: 'bid',
+        address: from.toLowerCase(),
+        type: 'bet',
         roundId: roundId.toString(),
-        amount: Number(formatEther(`${amount}`)),
+        option: userOption,
+        value: userValue,
         transactionHash,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     }
 
-    if (refundUser && !refundUser?.empty) {
-      const refundTxnRef = firestore.collection('transactions').doc(`${transactionHash}-refund`);
-      transaction.set(refundTxnRef, {
-        userId: refundUser.docs[0].id,
-        username: refundUser.docs[0].data().username,
-        avatar: refundUser.docs[0].data().avatar,
-        address: refundUser.docs[0].data().address,
-        type: 'refund',
-        roundId: roundId.toString(),
-        amount: refundAmount,
-        transactionHash,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-    }
+    const roundRef = firestore.collection('rounds').doc(roundId.toString());
+    const countKey = `bettings.${userOption}.count`;
+    const valueKey = `bettings.${userOption}.value`;
+    transaction.update(roundRef, {
+      [countKey]: admin.firestore.FieldValue.increment(1),
+      [valueKey]: admin.firestore.FieldValue.increment(userValue),
+    });
   });
 
   console.log(`========== SUCCESS validateGameTransaction at ${date()}, transactionHash ${transactionHash} ==========`);
-  updateRound();
 };
 
 export const checkReward = async ({ userId }) => {

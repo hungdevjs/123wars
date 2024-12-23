@@ -1,9 +1,9 @@
 import shuffle from 'lodash.shuffle';
 
-import { create, start, end, getActiveRoundId } from './round.service.js';
+import { create, lock, start, end, getActiveRoundId } from './round.service.js';
 import configs from '../configs/game.config.js';
 
-const { width, height, itemCount, itemTypes, speed, size, lockTime } = configs;
+const { width, height, itemCount, itemTypes, speed, size, lockTime, openTime } = configs;
 
 const getRandomVelocity = () => {
   return {
@@ -16,10 +16,13 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const startRound = async () => {
   await create();
-  await delay(lockTime);
+  await delay(openTime);
 
   const roundId = await getActiveRoundId();
-  const { startTime } = await start({ roundId });
+  await lock({ roundId });
+  await delay(lockTime);
+
+  await start({ roundId });
 
   const gameState = [];
   const shuffled = shuffle([

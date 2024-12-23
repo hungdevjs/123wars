@@ -6,7 +6,7 @@ const TransactionStatus = ({ status }) => {
     return (
       <div className="flex flex-col items-center justify-center gap-1">
         <IconLoading className="animate-spin w-8 h-8" />
-        <p className="text-sm italic text-center">Submitting transaction...</p>
+        <p className="text-sm italic text-center text-white">Submitting transaction...</p>
       </div>
     );
 
@@ -14,9 +14,7 @@ const TransactionStatus = ({ status }) => {
     return (
       <div className="flex flex-col items-center justify-center gap-1">
         <IconError className="w-8 h-8" />
-        <p className="text-sm italic text-center text-red-700">
-          {status.value}
-        </p>
+        <p className="text-sm italic text-center text-red-700">{status.value}</p>
       </div>
     );
 
@@ -24,17 +22,11 @@ const TransactionStatus = ({ status }) => {
     return (
       <div className="flex flex-col items-center justify-center gap-1">
         <IconSuccess className="w-8 h-8" />
-        <p className="text-sm italic text-center text-green-700">
-          {status.value}
-        </p>
+        <p className="text-sm italic text-center text-green-700">{status.value}</p>
         {status.transactionHash && (
           <p
             className="text-xs text-center underline cursor-pointer"
-            onClick={() =>
-              window.open(
-                `${chain.blockExplorers[0]?.url}/tx/${status.transactionHash}`
-              )
-            }
+            onClick={() => window.open(`${chain.blockExplorers[0]?.url}/tx/${status.transactionHash}`)}
           >
             View transaction
           </p>
