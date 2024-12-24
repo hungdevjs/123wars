@@ -93,6 +93,7 @@ export const validateGameTransaction = async ({ transactionHash }) => {
         option: userOption,
         value: userValue,
         transactionHash,
+        status: 'success',
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     }

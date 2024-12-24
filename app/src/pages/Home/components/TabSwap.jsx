@@ -2,8 +2,10 @@ import { useState } from 'react';
 
 import { IconETH, IconCoin, IconSwitch } from '../../../components/Icons';
 import { formatAmount } from '../../../utils/strings';
+import useUserStore from '../../../stores/user.store';
 
 const TabSwap = () => {
+  const user = useUserStore((state) => state.user);
   const [type, setType] = useState('buy');
   const [amount, setAmount] = useState('');
 
@@ -21,6 +23,8 @@ const TabSwap = () => {
   const toggle = () => {
     setType(type === 'buy' ? 'sell' : 'buy');
   };
+
+  const valid = !!user;
 
   return (
     <div className="overflow-auto py-2 flex flex-col gap-2">
@@ -82,8 +86,11 @@ const TabSwap = () => {
           </div>
         </div>
       </div>
-      <button className="w-full transition duration-100 bg-indigo-500 active:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg">
-        swap
+      <button
+        className="w-full transition duration-100 bg-indigo-500 active:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-40"
+        disabled={!valid}
+      >
+        {user ? 'swap' : 'sign in to swap'}
       </button>
     </div>
   );

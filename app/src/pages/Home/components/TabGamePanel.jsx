@@ -2,11 +2,13 @@ import { useState } from 'react';
 
 import useSystemStore from '../../../stores/system.store';
 import useRound from '../../../hooks/useRound';
+import useUserStore from '../../../stores/user.store';
 import { IconCoin } from '../../../components/Icons';
 import BetConfirmation from './BetConfirmation';
 
 const TabGamePanel = () => {
   const { recentWinners, roundBets } = useRound();
+  const user = useUserStore((state) => state.user);
   const winners = useSystemStore((state) => state.winners);
   const activeRound = useSystemStore((state) => state.activeRound);
   const [option, setOption] = useState(null);
@@ -36,7 +38,11 @@ const TabGamePanel = () => {
   const toggleOption = (item) => setOption(item === option ? null : item);
 
   const valid =
-    status === 'open' && ['rock', 'paper', 'scissors'].includes(option) && amount > 0 && !isNaN(Number(amount));
+    !!user &&
+    status === 'open' &&
+    ['rock', 'paper', 'scissors'].includes(option) &&
+    amount > 0 &&
+    !isNaN(Number(amount));
 
   return (
     <div className="h-full py-2 flex flex-col gap-4">
@@ -102,7 +108,7 @@ const TabGamePanel = () => {
           disabled={!valid}
           onClick={() => setOpenConfirmation(true)}
         >
-          bet
+          {user ? 'bet' : 'sign in to bet'}
         </button>
       </div>
 

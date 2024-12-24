@@ -162,6 +162,32 @@ export const end = async ({ roundId, winner }) => {
   batch.update(roundRef, roundData);
   batch.set(systemRef, systemData, { merge: true });
 
+  const roundBettings = await firestore
+    .collection('transactions')
+    .where('roundId', '==', roundId)
+    .where('type', '==', 'bet')
+    .where('status', '==', 'success')
+    .get();
+
+  roundBettings.docs
+    .filter((doc) => doc.data().option === winner)
+    .map((doc) => {
+      const { userId, address, value, option } = doc.data();
+
+      const rewardTxnRef = firestore.collection('transactions').doc();
+      batch.set(rewardTxnRef, {
+        roundId,
+        userId,
+        address,
+        value: value * 3,
+        type: 'win',
+        option,
+        transactionHash: '',
+        status: 'unprocessed',
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+
   await batch.commit();
 };
 

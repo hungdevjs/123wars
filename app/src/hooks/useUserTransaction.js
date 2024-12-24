@@ -20,17 +20,23 @@ const useUserTransaction = () => {
   const totalPages = Math.ceil(userTransactions.length / limit);
 
   useEffect(() => {
-    const q = query(
-      collection(firestore, 'transactions'),
-      where('userId', '==', user.id),
-      orderBy('createdAt', 'desc')
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setUserTransactions(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    });
+    let unsubscribe;
 
-    return unsubscribe;
-  }, []);
+    if (user) {
+      const q = query(
+        collection(firestore, 'transactions'),
+        where('userId', '==', user.id),
+        orderBy('createdAt', 'desc')
+      );
+      unsubscribe = onSnapshot(q, (snapshot) => {
+        setUserTransactions(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      });
+    } else {
+      setUserTransactions([]);
+    }
+
+    return () => unsubscribe?.();
+  }, [user]);
 
   return { transactions, page, setPage, limit, setLimit, totalPages };
 };

@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 
 import { IconCoin, IconArrowLeft, IconArrowRight } from '../../../components/Icons';
 import useUserTransaction from '../../../hooks/useUserTransaction';
+import useUserStore from '../../../stores/user.store';
 import { formatDate, formatAddress } from '../../../utils/strings';
 import { chain } from '../../../configs/thirdweb.config';
 
 const TabHistory = () => {
+  const user = useUserStore((state) => state.user);
   const { transactions, page, setPage, totalPages } = useUserTransaction();
 
   const [pageInput, setPageInput] = useState(page + 1);
@@ -21,6 +23,13 @@ const TabHistory = () => {
   useEffect(() => {
     if (pageInput) setPage(pageInput - 1);
   }, [pageInput]);
+
+  if (!user)
+    return (
+      <div className="h-full py-2 flex justify-center items-center">
+        <p className="text-white">sign in to view your bets</p>
+      </div>
+    );
 
   return (
     <div className="h-full py-2 flex flex-col gap-2">
@@ -74,12 +83,16 @@ const TabHistory = () => {
                   <IconCoin className="w-3 h-3 md:w-5 md:h-5" />
                 </div>
                 <div className="col-span-3">
-                  <p
-                    className="text-[9px] sm:text-base text-white text-right underline cursor-pointer"
-                    onClick={() => window.open(`${chain.blockExplorers[0]?.url}/tx/${transaction.transactionHash}`)}
-                  >
-                    {formatAddress(transaction.transactionHash.split('-')[0], 5)}
-                  </p>
+                  {transaction.status === 'success' || transaction.transactionHash ? (
+                    <p
+                      className="text-[9px] sm:text-base text-white text-right underline cursor-pointer"
+                      onClick={() => window.open(`${chain.blockExplorers[0]?.url}/tx/${transaction.transactionHash}`)}
+                    >
+                      {formatAddress(transaction.transactionHash.split('-')[0], 5)}
+                    </p>
+                  ) : (
+                    <p className="text-[9px] sm:text-base text-white text-right">{transaction.status}</p>
+                  )}
                 </div>
               </div>
             </div>
