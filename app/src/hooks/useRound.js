@@ -28,6 +28,7 @@ const useRound = () => {
       const q = query(
         collection(firestore, 'transactions'),
         where('userId', '==', user.id),
+        where('type', '==', 'bet'),
         where('roundId', '==', activeRound.id)
       );
       unsubscribe = onSnapshot(q, (snapshot) => {
