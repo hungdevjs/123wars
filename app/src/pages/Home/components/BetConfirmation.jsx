@@ -28,7 +28,7 @@ const BetConfirmation = ({ open, amount, option, close }) => {
       await validateTransaction({ transactionHash });
       setStatus({
         status: 'success',
-        value: 'Bid successful',
+        value: 'Bet successful',
         transactionHash,
       });
     } catch (err) {

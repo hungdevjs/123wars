@@ -168,9 +168,9 @@ export const IconArrowRight = ({ ...props }) => (
     <g>
       <path
         d="M2.258 1.315a.265.265 0 0 0-.174.469L3.703 3.17l-1.62 1.386a.265.265 0 1 0 .345.4L4.28 3.373a.265.265 0 0 0 0-.403L2.428 1.382a.265.265 0 0 0-.17-.067z"
-        fill="#000000"
+        fill="#ffffff"
         opacity="1"
-        data-original="#000000"
+        data-original="#ffffff"
       ></path>
     </g>
   </svg>
@@ -180,12 +180,12 @@ export const IconArrowLeft = ({ ...props }) => (
   <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" {...props}>
     <g>
       <path
-        fill="#000000"
+        fill="#ffffff"
         fillRule="evenodd"
         d="M15 4a1 1 0 1 1 1.414 1.414l-5.879 5.879a1 1 0 0 0 0 1.414l5.88 5.879A1 1 0 0 1 15 20l-7.293-7.293a1 1 0 0 1 0-1.414z"
         clipRule="evenodd"
         opacity="1"
-        data-original="#000000"
+        data-original="#ffffff"
       ></path>
     </g>
   </svg>

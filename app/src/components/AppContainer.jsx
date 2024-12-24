@@ -4,7 +4,7 @@ const AppContainer = ({ children }) => {
       className="flex justify-center bg-black bg-center bg-cover"
       // style={{ backgroundImage: 'url(images/space.png)' }}
     >
-      <div className="w-svw max-w-[960px]">{children}</div>
+      <div className="w-svw max-w-[1560px]">{children}</div>
     </div>
   );
 };

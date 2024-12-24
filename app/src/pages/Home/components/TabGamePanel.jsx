@@ -48,7 +48,7 @@ const TabGamePanel = () => {
             <p className="text-white italic">
               potential returns: {(Math.max(...Object.values(roundBets)) * 3).toLocaleString()}
             </p>
-            <IconCoin className="w-3 h-3" />
+            <IconCoin className="w-3 h-3 sm:w-5 sm:h-5" />
           </div>
         </div>
         <div className="pt-2 flex items-center gap-2">
@@ -66,9 +66,9 @@ const TabGamePanel = () => {
             >
               <img src={`icons/${item}.png`} alt={item} className="w-8" />
               <div className="flex flex-col">
-                <p className="text-white text-xs">{bettings?.[item]?.count || 0} bets</p>
+                <p className="text-white text-xs md:text-sm">{bettings?.[item]?.count || 0} bets</p>
                 <div className="flex items-center gap-1">
-                  <p className="text-white text-xs">{(bettings?.[item]?.value || 0).toLocaleString()}</p>
+                  <p className="text-white text-xs md:text-sm">{(bettings?.[item]?.value || 0).toLocaleString()}</p>
                   <IconCoin className="w-4 h-4" />
                 </div>
               </div>
