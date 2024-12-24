@@ -14,7 +14,7 @@ const TabHistory = () => {
 
   const correction = {
     bet: '-',
-    'bet-reward': '+',
+    win: '+',
   };
 
   const back = () => pageInput && setPageInput(Math.max(pageInput - 1, 1));
