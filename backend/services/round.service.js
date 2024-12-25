@@ -4,13 +4,20 @@ import { ethers } from 'ethers';
 import chunk from 'lodash.chunk';
 
 import admin, { firestore } from '../configs/firebase.config.js';
-import { getAdminWallet, getWorkerWallet, getSignerWallet, getGameContract } from './contract.service.js';
+import {
+  getAdminWallet,
+  getWorkerWallet,
+  getSignerWallet,
+  getGameContract,
+  decodeGameTxnLogs,
+} from './contract.service.js';
 import { date } from '../utils/strings.js';
 import { retry } from '../utils/functions.js';
+import quickNode from '../configs/quicknode.config.js';
 import configs from '../configs/game.config.js';
 import environments from '../utils/environments.js';
 
-const { NETWORK_ID } = environments;
+const { NETWORK_ID, GAME_ADDRESS } = environments;
 
 const { lockTime, openTime } = configs;
 
@@ -216,6 +223,63 @@ export const generateBetSignature = async ({ userId, value, option }) => {
   const signerWallet = getSignerWallet();
   const signature = await signerWallet.signMessage(ethers.toBeArray(message));
   return { address, roundId, option: options[option], value, time, signature };
+};
+
+export const validateGameTransaction = async ({ transactionHash }) => {
+  console.log(`========== validateGameTransaction at ${date()}, transactionHash ${transactionHash} ==========`);
+  const txRef = firestore.collection('transactions').doc(transactionHash);
+  await firestore.runTransaction(async (transaction) => {
+    const tx = await transaction.get(txRef);
+    if (tx.exists) {
+      console.log(
+        `========== CANCEL validateGameTransaction, transaction ${transactionHash} is already processed ==========`
+      );
+      return;
+    }
+
+    const receipt = await quickNode.waitForTransaction(transactionHash);
+    const { to, status, logs } = receipt;
+    if (status !== 1) throw new Error('API error: Invalid txn status');
+    if (to.toLowerCase() !== GAME_ADDRESS.toLowerCase()) throw new Error('API error: Bad credential');
+
+    const decodedData = decodeGameTxnLogs('BetCreated', logs[logs.length - 1]);
+    const { roundId, option, from, value } = decodedData;
+
+    const options = {
+      1: 'rock',
+      2: 'paper',
+      3: 'scissors',
+    };
+
+    const userOption = options[option.toString()];
+    const userValue = Number(formatEther(`${value}`));
+
+    const userRef = firestore.collection('users').where('address', '==', from.toLowerCase()).limit(1);
+    const user = await transaction.get(userRef);
+    if (!user.empty) {
+      transaction.set(txRef, {
+        userId: user.docs[0].id,
+        address: from.toLowerCase(),
+        type: 'bet',
+        roundId: roundId.toString(),
+        option: userOption,
+        value: userValue,
+        transactionHash,
+        status: 'success',
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    const roundRef = firestore.collection('rounds').doc(roundId.toString());
+    const countKey = `bettings.${userOption}.count`;
+    const valueKey = `bettings.${userOption}.value`;
+    transaction.update(roundRef, {
+      [countKey]: admin.firestore.FieldValue.increment(1),
+      [valueKey]: admin.firestore.FieldValue.increment(userValue),
+    });
+  });
+
+  console.log(`========== SUCCESS validateGameTransaction at ${date()}, transactionHash ${transactionHash} ==========`);
 };
 
 const distributeRewards = async ({ winners, rewards }) => {

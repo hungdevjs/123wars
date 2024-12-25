@@ -1,7 +1,7 @@
-import dollarAuctionListener from './tasks/dollarAuctionListener.js';
+import gameListener from './tasks/gameListener.js';
 
 const main = async () => {
-  await dollarAuctionListener();
+  await gameListener();
 };
 
 main();

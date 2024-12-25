@@ -1,4 +1,4 @@
-import * as dotenv from "dotenv";
+import * as dotenv from 'dotenv';
 dotenv.config();
 
 const environments = {
@@ -7,7 +7,7 @@ const environments = {
   NETWORK_ID: process.env.NETWORK_ID,
   QUICKNODE_WSS_ENDPOINT: process.env.QUICKNODE_WSS_ENDPOINT,
   WORKER_PRIVATE_KEY: process.env.WORKER_PRIVATE_KEY,
-  DOLLAR_AUCTION_ADDRESS: process.env.DOLLAR_AUCTION_ADDRESS,
+  GAME_ADDRESS: process.env.GAME_ADDRESS,
 };
 
 export default environments;

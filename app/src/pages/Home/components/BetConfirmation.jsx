@@ -4,7 +4,7 @@ import { IconClose, IconCoin } from '../../../components/Icons';
 import TransactionStatus from '../../../components/TransactionStatus';
 import useWar from '../../../hooks/useWar';
 import useSystemStore from '../../../stores/system.store';
-import { validateTransaction } from '../../../services/user.service';
+import { validateTransaction } from '../../../services/round.service';
 import { generateBetSignature } from '../../../services/round.service';
 
 const BetConfirmation = ({ open, amount, option, close }) => {

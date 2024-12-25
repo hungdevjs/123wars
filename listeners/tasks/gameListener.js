@@ -2,7 +2,7 @@ import { Contract } from '@ethersproject/contracts';
 import { formatEther } from '@ethersproject/units';
 import system from 'system-commands';
 
-import DollarAuction from '../assets/abis/DollarAuction.json' assert { type: 'json' };
+import War from '../assets/abis/War.json' assert { type: 'json' };
 import admin, { firestore } from '../configs/firebase.config.js';
 import { getProvider } from '../configs/quicknode.config.js';
 import environments from '../utils/environments.js';
@@ -10,17 +10,14 @@ import { date } from '../../cronjobs/utils/strings.js';
 import { delay } from '../../app/src/utils/functions.js';
 import { updateRound } from '../services/round.service.js';
 
-const { NODE_ENV, NETWORK_ID, DOLLAR_AUCTION_ADDRESS } = environments;
+const { NODE_ENV, NETWORK_ID, GAME_ADDRESS } = environments;
 
 const Events = {
-  BidCreated: 'BidCreated',
-  Refund: 'Refund',
-  RoundEnded: 'RoundEnded',
-  RoundCreated: 'RoundCreated',
+  BetCreated: 'BetCreated',
 };
 
-const dollarAuctionListener = async () => {
-  console.log(`========== start dollarAuctionListener at ${date()} ==========`);
+const gameListener = async () => {
+  console.log(`========== start gameListener at ${date()} ==========`);
 
   let provider;
   while (!provider?._wsReady) {
@@ -37,12 +34,12 @@ const dollarAuctionListener = async () => {
   // provider listeners
   provider.on('error', async (error) => {
     console.error(error);
-    console.error(`========== FAILED provider dollarAuctionListener at ${date()}, err ${error.message} ==========`);
+    console.error(`========== FAILED provider gameListener at ${date()}, err ${error.message} ==========`);
 
     if (NODE_ENV === 'production') {
       try {
         console.log('========== retart pm2 process ==========');
-        await system('pm2 restart DOLLAR-AUCTION-LISTENER');
+        await system('pm2 restart GAME-LISTENER');
       } catch (err) {
         console.error(err);
         console.error(`========== FAILED restart pm2 process ==========`);
@@ -51,7 +48,7 @@ const dollarAuctionListener = async () => {
   });
 
   process.on('uncaughtException', async (error) => {
-    console.error(`========== FAILED process dollarAuctionListener at ${date()}, err ${error.message} ==========`);
+    console.error(`========== FAILED process gameListener at ${date()}, err ${error.message} ==========`);
 
     try {
       provider._websocket.terminate();
@@ -61,7 +58,7 @@ const dollarAuctionListener = async () => {
       if (NODE_ENV === 'production') {
         try {
           console.log('========== retart pm2 process ==========');
-          await system('pm2 restart DOLLAR-AUCTION-LISTENER');
+          await system('pm2 restart GAME-LISTENER');
         } catch (err) {
           console.error(err);
           console.error(`========== FAILED restart pm2 process ==========`);
@@ -71,9 +68,7 @@ const dollarAuctionListener = async () => {
   });
 
   process.on('unhandledRejection', async (reason, promise) => {
-    console.error(
-      `========== FAILED unhandledRejection dollarAuctionListener at ${date()}, reason ${reason} ==========`
-    );
+    console.error(`========== FAILED unhandledRejection gameListener at ${date()}, reason ${reason} ==========`);
 
     try {
       provider._websocket.terminate();
@@ -83,7 +78,7 @@ const dollarAuctionListener = async () => {
       if (NODE_ENV === 'production') {
         try {
           console.log('========== retart pm2 process ==========');
-          await system('pm2 restart DOLLAR-AUCTION-LISTENER');
+          await system('pm2 restart GAME-LISTENER');
         } catch (err) {
           console.error(err);
           console.error(`========== FAILED restart pm2 process ==========`);
@@ -95,85 +90,82 @@ const dollarAuctionListener = async () => {
   provider._websocket.on('close', () => {
     console.log(`========== provider socket closed, restart at ${date()} ==========`);
     contract.removeAllListeners(Object.values(Events));
-    dollarAuctionListener();
+    gameListener();
   });
 
-  console.log(
-    `========== start listen dollar auction contract ${DOLLAR_AUCTION_ADDRESS} on network ${NETWORK_ID} ==========`
-  );
-  const contract = new Contract(DOLLAR_AUCTION_ADDRESS, DollarAuction.abi, provider);
+  console.log(`========== start listen game contract ${GAME_ADDRESS} on network ${NETWORK_ID} ==========`);
+  const contract = new Contract(GAME_ADDRESS, War.abi, provider);
 
-  contract.on(Events.BidCreated, async (roundId, bidder, amount, event) => {
+  contract.on(Events.BetCreated, async (roundId, option, from, value, event) => {
+    const options = {
+      1: 'rock',
+      2: 'paper',
+      3: 'scissors',
+    };
+
     const data = {
       roundId: `${roundId.toString()}`,
-      address: bidder.toLowerCase(),
-      amount: Number(formatEther(amount)),
-      blockNumber: event.blockNumber,
+      option: options[option.toString()],
+      from: from.toLowerCase(),
+      value: Number(formatEther(value)),
       transactionHash: event.transactionHash,
     };
-    await processBidCreatedEvent(data);
-  });
-
-  contract.on(Events.Refund, async (roundId, to, amount, event) => {
-    const data = {
-      roundId: `${roundId.toString()}`,
-      address: to.toLowerCase(),
-      amount: Number(formatEther(amount)),
-      blockNumber: event.blockNumber,
-      transactionHash: event.transactionHash,
-    };
-    await processRefundEvent(data);
+    await processBetCreatedEvent(data);
   });
 };
 
-const processBidCreatedEvent = async ({ roundId, address, amount, blockNumber, transactionHash }) => {
-  console.log(`========== start processBidCreatedEvent at ${date()} ==========`, {
+const processBetCreatedEvent = async ({ roundId, option, from, value, transactionHash }) => {
+  console.log(`========== start processBetCreatedEvent at ${date()} ==========`, {
     roundId,
-    address,
-    amount,
-    blockNumber,
+    option,
+    from,
+    value,
     transactionHash,
   });
   try {
     const txRef = firestore.collection('transactions').doc(transactionHash);
-    const chainRef = firestore.collection('chains').doc(NETWORK_ID);
-
     await firestore.runTransaction(async (transaction) => {
       const tx = await transaction.get(txRef);
       if (tx.exists) {
         console.log(
-          `========== CANCEL processBidCreatedEvent, transaction ${transactionHash} is already processed ==========`
+          `========== CANCEL processBetCreatedEvent, transaction ${transactionHash} is already processed ==========`
         );
         return;
       }
 
-      const userRef = firestore.collection('users').where('address', '==', address).limit(1);
+      const userRef = firestore.collection('users').where('address', '==', from).limit(1);
       const user = await transaction.get(userRef);
-      transaction.set(txRef, {
-        userId: user.empty ? null : user.docs[0].id,
-        username: user.empty ? null : user.docs[0].data().username,
-        avatar: user.empty ? null : user.docs[0].data().avatar,
-        address,
-        type: 'bid',
-        roundId: roundId,
-        amount,
-        transactionHash,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      if (!user.empty) {
+        transaction.set(txRef, {
+          userId: user.docs[0].id,
+          address: from.toLowerCase(),
+          type: 'bet',
+          roundId: roundId,
+          option,
+          value,
+          transactionHash,
+          status: 'success',
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      }
+
+      const roundRef = firestore.collection('rounds').doc(roundId);
+      const countKey = `bettings.${option}.count`;
+      const valueKey = `bettings.${option}.value`;
+      transaction.update(roundRef, {
+        [countKey]: admin.firestore.FieldValue.increment(1),
+        [valueKey]: admin.firestore.FieldValue.increment(value),
       });
-
-      transaction.set(chainRef, { lastBlock: blockNumber });
     });
-
-    await updateRound();
-    console.log(`========== SUCCESS start processBidCreatedEvent at ${date()} ==========`);
+    console.log(`========== SUCCESS start processBetCreatedEvent at ${date()} ==========`);
   } catch (err) {
     console.error(err);
-    console.log(`========== FAILED start processBidCreatedEvent at ${date()}, err ${err.message} ==========`);
+    console.log(`========== FAILED start processBetCreatedEvent at ${date()}, err ${err.message} ==========`);
   }
 };
 
 const processRefundEvent = async ({ roundId, address, amount, blockNumber, transactionHash }) => {
-  console.log(`========== start processBidCreatedEvent at ${date()} ==========`, {
+  console.log(`========== start processBetCreatedEvent at ${date()} ==========`, {
     roundId,
     address,
     amount,
@@ -206,11 +198,11 @@ const processRefundEvent = async ({ roundId, address, amount, blockNumber, trans
     });
 
     await updateRound();
-    console.log(`========== SUCCESS start processBidCreatedEvent at ${date()} ==========`);
+    console.log(`========== SUCCESS start processBetCreatedEvent at ${date()} ==========`);
   } catch (err) {
     console.error(err);
-    console.log(`========== FAILED start processBidCreatedEvent at ${date()}, err ${err.message} ==========`);
+    console.log(`========== FAILED start processBetCreatedEvent at ${date()}, err ${err.message} ==========`);
   }
 };
 
-export default dollarAuctionListener;
+export default gameListener;
