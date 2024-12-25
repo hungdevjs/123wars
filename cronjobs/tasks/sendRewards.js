@@ -8,7 +8,7 @@ import { date } from '../utils/strings.js';
 
 const distributeRewards = async ({ winners, rewards }) => {
   const workerWallet = getWorkerWallet();
-  const gameContract = getGameContract(workerWallet);
+  const gameContract = await getGameContract(workerWallet);
 
   const tx = await gameContract.sendRewards(winners, rewards);
 

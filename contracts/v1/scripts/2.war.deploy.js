@@ -2,7 +2,7 @@ const { ethers } = require('hardhat');
 
 const { verifyContract } = require('../utils/contracts');
 
-const tokenAddress = '0x48Ec00BD086D0e1C128070Cd7cE223681F9F3920';
+const tokenAddress = '0x935c61DADC5a3B7D8B1019D445740A2324571726';
 
 const main = async () => {
   try {

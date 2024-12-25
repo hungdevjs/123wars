@@ -7,7 +7,6 @@ const environments = {
   NETWORK_ID: process.env.NETWORK_ID,
   QUICKNODE_HTTPS_ENDPOINT: process.env.QUICKNODE_HTTPS_ENDPOINT,
   WORKER_PRIVATE_KEY: process.env.WORKER_PRIVATE_KEY,
-  GAME_ADDRESS: process.env.GAME_ADDRESS,
   CRON_SEND_REWARDS: process.env.CRON_SEND_REWARDS,
 };
 

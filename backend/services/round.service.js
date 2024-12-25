@@ -17,7 +17,7 @@ import quickNode from '../configs/quicknode.config.js';
 import configs from '../configs/game.config.js';
 import environments from '../utils/environments.js';
 
-const { NETWORK_ID, GAME_ADDRESS } = environments;
+const { NETWORK_ID } = environments;
 
 const { lockTime, openTime } = configs;
 
@@ -51,7 +51,7 @@ export const updateRound = async () => {
     }
 
     const adminWallet = getAdminWallet();
-    const gameContract = getGameContract(adminWallet);
+    const gameContract = await getGameContract(adminWallet);
 
     const roundInfo = await gameContract.roundInfo();
 
@@ -227,6 +227,9 @@ export const generateBetSignature = async ({ userId, value, option }) => {
 
 export const validateGameTransaction = async ({ transactionHash }) => {
   console.log(`========== validateGameTransaction at ${date()}, transactionHash ${transactionHash} ==========`);
+  const system = await firestore.collection('system').doc('main').get();
+  const { addresses } = system.data();
+
   const txRef = firestore.collection('transactions').doc(transactionHash);
   await firestore.runTransaction(async (transaction) => {
     const tx = await transaction.get(txRef);
@@ -240,9 +243,9 @@ export const validateGameTransaction = async ({ transactionHash }) => {
     const receipt = await quickNode.waitForTransaction(transactionHash);
     const { to, status, logs } = receipt;
     if (status !== 1) throw new Error('API error: Invalid txn status');
-    if (to.toLowerCase() !== GAME_ADDRESS.toLowerCase()) throw new Error('API error: Bad credential');
+    if (to.toLowerCase() !== addresses.game.toLowerCase()) throw new Error('API error: Bad credential');
 
-    const decodedData = decodeGameTxnLogs('BetCreated', logs[logs.length - 1]);
+    const decodedData = await decodeGameTxnLogs('BetCreated', logs[logs.length - 1]);
     const { roundId, option, from, value } = decodedData;
 
     const options = {
@@ -284,7 +287,7 @@ export const validateGameTransaction = async ({ transactionHash }) => {
 
 const distributeRewards = async ({ winners, rewards }) => {
   const workerWallet = getWorkerWallet();
-  const gameContract = getGameContract(workerWallet);
+  const gameContract = await getGameContract(workerWallet);
 
   const tx = await gameContract.sendRewards(winners, rewards);
 

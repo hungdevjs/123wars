@@ -5,36 +5,38 @@ import { getLoginPayload as getLoginPayloadAPI, validateLoginPayload } from '../
 import { getMe } from '../services/user.service';
 import { saveToken, removeToken } from '../utils/storage';
 import useUserStore from '../stores/user.store';
-import environments from '../utils/environments';
-
-const { TOKEN_ADDRESS } = environments;
-
-const getLoginPayload = async (params) => {
-  const res = await getLoginPayloadAPI({
-    address: params.address,
-    chainId: chain.id,
-  });
-
-  return res.data;
-};
-
-const doLogin = async (params) => {
-  const res = await validateLoginPayload(params);
-  saveToken(res.data);
-};
-
-const isLoggedIn = async () => {
-  const res = await getMe();
-  useUserStore.getState().setUser(res.data);
-  return true;
-};
-
-const doLogout = () => {
-  removeToken();
-  useUserStore.getState().setUser(null);
-};
+import useSystemStore from '../stores/system.store';
 
 const ConnectWalletButton = ({ buttonStyle = {} }) => {
+  const setUser = useUserStore((state) => state.setUser);
+  const system = useSystemStore((state) => state.system);
+  const { addresses } = system || {};
+
+  const getLoginPayload = async (params) => {
+    const res = await getLoginPayloadAPI({
+      address: params.address,
+      chainId: chain.id,
+    });
+
+    return res.data;
+  };
+
+  const doLogin = async (params) => {
+    const res = await validateLoginPayload(params);
+    saveToken(res.data);
+  };
+
+  const isLoggedIn = async () => {
+    const res = await getMe();
+    setUser(res.data);
+    return true;
+  };
+
+  const doLogout = () => {
+    removeToken();
+    setUser(null);
+  };
+
   return (
     <ConnectButton
       client={client}
@@ -56,10 +58,10 @@ const ConnectWalletButton = ({ buttonStyle = {} }) => {
         label: 'Sign in',
         style: { ...buttonStyle },
       }}
-      supportedTokens={[TOKEN_ADDRESS]}
+      supportedTokens={[addresses?.token]}
       detailsButton={{
         displayBalanceToken: {
-          [chain.id]: TOKEN_ADDRESS,
+          [chain.id]: addresses?.token,
         },
         style: { ...buttonStyle },
       }}

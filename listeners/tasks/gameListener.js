@@ -10,7 +10,7 @@ import { date } from '../../cronjobs/utils/strings.js';
 import { delay } from '../../app/src/utils/functions.js';
 import { updateRound } from '../services/round.service.js';
 
-const { NODE_ENV, NETWORK_ID, GAME_ADDRESS } = environments;
+const { NODE_ENV, NETWORK_ID } = environments;
 
 const Events = {
   BetCreated: 'BetCreated',
@@ -18,6 +18,9 @@ const Events = {
 
 const gameListener = async () => {
   console.log(`========== start gameListener at ${date()} ==========`);
+
+  const system = await firestore.collection('system').doc('main').get();
+  const { addresses } = system.data();
 
   let provider;
   while (!provider?._wsReady) {
@@ -93,8 +96,8 @@ const gameListener = async () => {
     gameListener();
   });
 
-  console.log(`========== start listen game contract ${GAME_ADDRESS} on network ${NETWORK_ID} ==========`);
-  const contract = new Contract(GAME_ADDRESS, War.abi, provider);
+  console.log(`========== start listen game contract ${addresses.game} on network ${NETWORK_ID} ==========`);
+  const contract = new Contract(addresses.game, War.abi, provider);
 
   contract.on(Events.BetCreated, async (roundId, option, from, value, event) => {
     const options = {

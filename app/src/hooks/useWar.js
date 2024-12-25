@@ -6,32 +6,33 @@ import War from '../assets/abis/War.json';
 import Pitcoin from '../assets/abis/Pitcoin.json';
 import { chain, client } from '../configs/thirdweb.config';
 import useWallet from './useWallet';
+import useSystemStore from '../stores/system.store';
 import { delay } from '../utils/functions';
-import environments from '../utils/environments';
-
-const { GAME_ADDRESS, TOKEN_ADDRESS } = environments;
-
-const tokenContract = getContract({
-  address: TOKEN_ADDRESS,
-  abi: Pitcoin.abi,
-  chain,
-  client,
-});
-
-const gameContract = getContract({
-  address: GAME_ADDRESS,
-  abi: War.abi,
-  chain,
-  client,
-});
 
 const useWar = () => {
+  const system = useSystemStore((state) => state.system);
+  const { addresses } = system || {};
   const { wallet } = useWallet();
   const { mutateAsync } = useSendTransaction();
+
+  const tokenContract = getContract({
+    address: addresses.token,
+    abi: Pitcoin.abi,
+    chain,
+    client,
+  });
+
+  const gameContract = getContract({
+    address: addresses.game,
+    abi: War.abi,
+    chain,
+    client,
+  });
+
   const { data, isLoading, refetch } = useReadContract({
     contract: tokenContract,
     method: 'allowance',
-    params: [wallet?.address, GAME_ADDRESS],
+    params: [wallet?.address, addresses.game],
   });
 
   useEffect(() => {
@@ -50,7 +51,7 @@ const useWar = () => {
       const approveTransaction = prepareContractCall({
         contract: tokenContract,
         method: 'approve',
-        params: [GAME_ADDRESS, toWei('1000000000')],
+        params: [addresses.game, toWei('1000000000')],
       });
 
       await mutateAsync(approveTransaction);

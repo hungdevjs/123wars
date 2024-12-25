@@ -7,7 +7,6 @@ const environments = {
   NETWORK_ID: process.env.NETWORK_ID,
   QUICKNODE_WSS_ENDPOINT: process.env.QUICKNODE_WSS_ENDPOINT,
   WORKER_PRIVATE_KEY: process.env.WORKER_PRIVATE_KEY,
-  GAME_ADDRESS: process.env.GAME_ADDRESS,
 };
 
 export default environments;
