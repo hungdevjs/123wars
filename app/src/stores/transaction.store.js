@@ -5,7 +5,7 @@ const useTransactionStore = create((set, get) => ({
   setUserTransactions: (userTransactions) => set(() => ({ userTransactions })),
   page: 0,
   setPage: (page) => set(() => ({ page })),
-  limit: 15,
+  limit: 17,
   setLimit: (limit) => set(() => ({ limit })),
 }));
 

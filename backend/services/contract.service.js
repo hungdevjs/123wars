@@ -5,10 +5,15 @@ import War from '../assets/abis/War.json' assert { type: 'json' };
 import environments from '../utils/environments.js';
 import quickNode from '../configs/quicknode.config.js';
 
-const { ADMIN_PRIVATE_KEY, SIGNER_PRIVATE_KEY, GAME_ADDRESS } = environments;
+const { ADMIN_PRIVATE_KEY, WORKER_PRIVATE_KEY, SIGNER_PRIVATE_KEY, GAME_ADDRESS } = environments;
 
 export const getAdminWallet = () => {
   const wallet = new Wallet(ADMIN_PRIVATE_KEY, quickNode);
+  return wallet;
+};
+
+export const getWorkerWallet = () => {
+  const wallet = new Wallet(WORKER_PRIVATE_KEY, quickNode);
   return wallet;
 };
 

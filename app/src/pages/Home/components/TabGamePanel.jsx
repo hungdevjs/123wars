@@ -5,6 +5,7 @@ import useRound from '../../../hooks/useRound';
 import useUserStore from '../../../stores/user.store';
 import { IconCoin } from '../../../components/Icons';
 import BetConfirmation from './BetConfirmation';
+import { formatAmount } from '../../../utils/strings';
 
 const TabGamePanel = () => {
   const { recentWinners, roundBets } = useRound();
@@ -44,6 +45,8 @@ const TabGamePanel = () => {
     amount > 0 &&
     !isNaN(Number(amount));
 
+  const totalBetValue = Object.values(roundBets).reduce((sum, value) => sum + value, 0);
+
   return (
     <div className="h-full py-2 flex flex-col gap-4">
       <p className="text-white">round #{id}</p>
@@ -52,7 +55,7 @@ const TabGamePanel = () => {
           <p className="text-white underline">betting</p>
           <div className="flex items-center gap-1">
             <p className="text-white italic">
-              potential returns: {(Math.max(...Object.values(roundBets)) * 3).toLocaleString()}
+              maximum returns: {(Math.max(...Object.values(roundBets)) * 4 - totalBetValue).toLocaleString()}
             </p>
             <IconCoin className="w-3 h-3 sm:w-5 sm:h-5" />
           </div>
@@ -72,7 +75,7 @@ const TabGamePanel = () => {
             >
               <img src={`icons/${item}.png`} alt={item} className="w-8" />
               <div className="flex flex-col">
-                <p className="text-white text-xs md:text-sm">{bettings?.[item]?.count || 0} bets</p>
+                <p className="text-white text-xs md:text-sm">{formatAmount(bettings?.[item]?.count || 0, 2)} bets</p>
                 <div className="flex items-center gap-1">
                   <p className="text-white text-xs md:text-sm">{(bettings?.[item]?.value || 0).toLocaleString()}</p>
                   <IconCoin className="w-4 h-4" />

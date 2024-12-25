@@ -1,6 +1,6 @@
 import shuffle from 'lodash.shuffle';
 
-import { create, lock, start, end, getActiveRoundId } from './round.service.js';
+import { create, lock, start, end, getActiveRoundId, sendRewards } from './round.service.js';
 import configs from '../configs/game.config.js';
 
 const { width, height, itemCount, itemTypes, speed, size, lockTime, openTime } = configs;
@@ -106,6 +106,7 @@ export const startRound = async () => {
         clearInterval(gameLoop);
 
         await end({ roundId, winner });
+        sendRewards({ roundId });
         await delay(2000);
         startRound();
       }

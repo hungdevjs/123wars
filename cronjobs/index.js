@@ -1,22 +1,15 @@
 import cron from 'node-cron';
 
-import crawRoundData from './tasks/crawRoundData.js';
-import checkRoundEnd from './tasks/checkRoundEnd.js';
+import sendRewards from './tasks/sendRewards.js';
 import environments from './utils/environments.js';
 
-const { CRON_CRAW_ROUND_DATA, CRON_CHECK_ROUND_END } = environments;
+const { CRON_SEND_REWARDS } = environments;
 
 const main = () => {
-  if (CRON_CRAW_ROUND_DATA) {
-    console.log('1. init job crawRoundData');
-    crawRoundData();
-    cron.schedule(CRON_CRAW_ROUND_DATA, crawRoundData);
-  }
-
-  if (CRON_CHECK_ROUND_END) {
-    console.log('2. init job checkRoundEnd');
-    checkRoundEnd();
-    cron.schedule(CRON_CHECK_ROUND_END, checkRoundEnd);
+  if (CRON_SEND_REWARDS) {
+    console.log('1. init job sendRewards');
+    sendRewards();
+    cron.schedule(CRON_SEND_REWARDS, sendRewards);
   }
 };
 

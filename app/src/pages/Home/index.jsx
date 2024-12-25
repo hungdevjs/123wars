@@ -10,7 +10,7 @@ const Home = () => {
         <p className="text-3xl font-semibold text-white">123 wars</p>
         <ConnectWalletButton />
       </div>
-      <div className="p-2 grid grid-cols-12 gap-2">
+      <div className="p-2 grid grid-cols-12 gap-4">
         <div className="col-span-12 lg:col-span-6">
           <Game />
         </div>
