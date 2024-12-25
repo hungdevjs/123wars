@@ -1,9 +1,0 @@
-✔ new contract, update to use roundInfo function @done(24-12-09 20:31)
-✔ update lastBlock in backend validate api, cronjob (can put it in updateRound function) @done(24-12-09 20:31)
-✔ create winner transaction @done(24-12-10 21:35)
-✔ info page @done(24-12-11 21:12)
-✔ account page @done(24-12-11 21:12)
-✔ history page @done(24-12-11 21:49)
-✔ win poppup @done(24-12-12 07:30)
-☐ add sounds
-☐ swap page

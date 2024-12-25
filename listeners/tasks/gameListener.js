@@ -1,6 +1,6 @@
 import { Contract } from '@ethersproject/contracts';
 import { formatEther } from '@ethersproject/units';
-import system from 'system-commands';
+import systemCommands from 'system-commands';
 
 import War from '../assets/abis/War.json' assert { type: 'json' };
 import admin, { firestore } from '../configs/firebase.config.js';
@@ -8,7 +8,6 @@ import { getProvider } from '../configs/quicknode.config.js';
 import environments from '../utils/environments.js';
 import { date } from '../../cronjobs/utils/strings.js';
 import { delay } from '../../app/src/utils/functions.js';
-import { updateRound } from '../services/round.service.js';
 
 const { NODE_ENV, NETWORK_ID } = environments;
 
@@ -42,7 +41,7 @@ const gameListener = async () => {
     if (NODE_ENV === 'production') {
       try {
         console.log('========== retart pm2 process ==========');
-        await system('pm2 restart GAME-LISTENER');
+        await systemCommands('pm2 restart GAME-LISTENER');
       } catch (err) {
         console.error(err);
         console.error(`========== FAILED restart pm2 process ==========`);
@@ -61,7 +60,7 @@ const gameListener = async () => {
       if (NODE_ENV === 'production') {
         try {
           console.log('========== retart pm2 process ==========');
-          await system('pm2 restart GAME-LISTENER');
+          await systemCommands('pm2 restart GAME-LISTENER');
         } catch (err) {
           console.error(err);
           console.error(`========== FAILED restart pm2 process ==========`);
@@ -81,7 +80,7 @@ const gameListener = async () => {
       if (NODE_ENV === 'production') {
         try {
           console.log('========== retart pm2 process ==========');
-          await system('pm2 restart GAME-LISTENER');
+          await systemCommands('pm2 restart GAME-LISTENER');
         } catch (err) {
           console.error(err);
           console.error(`========== FAILED restart pm2 process ==========`);
@@ -160,47 +159,6 @@ const processBetCreatedEvent = async ({ roundId, option, from, value, transactio
         [valueKey]: admin.firestore.FieldValue.increment(value),
       });
     });
-    console.log(`========== SUCCESS start processBetCreatedEvent at ${date()} ==========`);
-  } catch (err) {
-    console.error(err);
-    console.log(`========== FAILED start processBetCreatedEvent at ${date()}, err ${err.message} ==========`);
-  }
-};
-
-const processRefundEvent = async ({ roundId, address, amount, blockNumber, transactionHash }) => {
-  console.log(`========== start processBetCreatedEvent at ${date()} ==========`, {
-    roundId,
-    address,
-    amount,
-    blockNumber,
-    transactionHash,
-  });
-  try {
-    const txRef = firestore.collection('transactions').doc(`${transactionHash}-refund`);
-    const chainRef = firestore.collection('chains').doc(NETWORK_ID);
-
-    await firestore.runTransaction(async (transaction) => {
-      const tx = await transaction.get(txRef);
-      if (tx.exists) return;
-
-      const userRef = firestore.collection('users').where('address', '==', address).limit(1);
-      const user = await transaction.get(userRef);
-      transaction.set(txRef, {
-        userId: user.empty ? null : user.docs[0].id,
-        username: user.empty ? null : user.docs[0].data().username,
-        avatar: user.empty ? null : user.docs[0].data().avatar,
-        address,
-        type: 'refund',
-        roundId: roundId,
-        amount,
-        transactionHash,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      transaction.set(chainRef, { lastBlock: blockNumber });
-    });
-
-    await updateRound();
     console.log(`========== SUCCESS start processBetCreatedEvent at ${date()} ==========`);
   } catch (err) {
     console.error(err);
