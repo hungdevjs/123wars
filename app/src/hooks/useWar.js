@@ -41,7 +41,7 @@ const useWar = () => {
     }
   }, [wallet]);
 
-  const approvedTokenAmount = data ? toEther(data) : 0;
+  const approvedTokenAmount = data ? Number(toEther(data)) : 0;
 
   const bet = async ({ roundId, value, option, time, signature }) => {
     if (isLoading) return;
@@ -55,7 +55,7 @@ const useWar = () => {
       });
 
       await mutateAsync(approveTransaction);
-      await delay(1000);
+      await delay(3000);
       refetch();
     }
 

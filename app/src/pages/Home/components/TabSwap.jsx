@@ -1,13 +1,54 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { toEther } from 'thirdweb';
+import { toast } from 'sonner';
 
 import { IconETH, IconCoin, IconSwitch } from '../../../components/Icons';
+import TransactionStatus from '../../../components/TransactionStatus';
 import { formatAmount } from '../../../utils/strings';
 import useUserStore from '../../../stores/user.store';
+import useSwap from '../../../hooks/useSwap';
 
 const TabSwap = () => {
   const user = useUserStore((state) => state.user);
+  const {
+    setTokenIn,
+    setEthIn,
+    tokenInputToEthData,
+    ethInputToTokenData,
+    isLoadingTokenToEth,
+    isLoadingEthToToken,
+    swapEthToToken,
+    swapTokenToEth,
+  } = useSwap();
   const [type, setType] = useState('buy');
   const [amount, setAmount] = useState('');
+  const [status, setStatus] = useState({
+    status: 'idle',
+    value: '',
+  });
+
+  const ethOut = toEther(tokenInputToEthData?.[1] || '0');
+  const tokenOut = toEther(ethInputToTokenData?.[1] || '0');
+  const loadingOut = type === 'buy' ? isLoadingEthToToken : isLoadingTokenToEth;
+
+  const confirm = async () => {
+    setStatus({ status: 'loading', value: '' });
+
+    try {
+      const swap = type === 'buy' ? swapEthToToken : swapTokenToEth;
+      const transactionHash = await swap();
+      toast.success('swap successful');
+      setAmount(0);
+      setStatus({
+        status: 'success',
+        value: 'Swap successful',
+        transactionHash,
+      });
+    } catch (err) {
+      console.error(err);
+      setStatus({ status: 'error', value: err.message });
+    }
+  };
 
   const icons =
     type === 'buy'
@@ -22,9 +63,16 @@ const TabSwap = () => {
 
   const toggle = () => {
     setType(type === 'buy' ? 'sell' : 'buy');
+    setAmount(0);
   };
 
   const valid = !!user;
+
+  useEffect(() => {
+    const fn = type === 'buy' ? setEthIn : setTokenIn;
+    const value = Number(amount);
+    fn(value || 0);
+  }, [amount]);
 
   return (
     <div className="overflow-auto py-2 flex flex-col gap-2">
@@ -56,6 +104,7 @@ const TabSwap = () => {
                 if (!/^\d*\.?\d*$/.test(e.target.value)) return;
                 setAmount(e.target.value);
               }}
+              disabled={status.status === 'loading'}
             />
             <div className="flex items-center gap-1">
               {<icons.left.icon className="w-5 h-5" />}
@@ -77,6 +126,7 @@ const TabSwap = () => {
             <input
               className="flex-1 bg-transparent outline-none py-2 border-none text-white"
               placeholder="0.0"
+              value={loadingOut ? 'loading...' : type === 'buy' ? tokenOut : ethOut}
               disabled
             />
             <div className="flex items-center gap-1">
@@ -88,10 +138,14 @@ const TabSwap = () => {
       </div>
       <button
         className="w-full transition duration-100 bg-indigo-500 active:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg disabled:opacity-40"
-        disabled={!valid}
+        disabled={!valid || loadingOut || status.status === 'loading'}
+        onClick={confirm}
       >
-        {user ? 'swap' : 'sign in to swap'}
+        {status.status === 'loading' ? 'submitting' : user ? 'swap' : 'sign in to swap'}
       </button>
+      <div className="py-2">
+        <TransactionStatus status={status} />
+      </div>
     </div>
   );
 };

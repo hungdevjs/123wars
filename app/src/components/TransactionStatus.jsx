@@ -25,7 +25,7 @@ const TransactionStatus = ({ status }) => {
         <p className="text-sm italic text-center text-green-700">{status.value}</p>
         {status.transactionHash && (
           <p
-            className="text-xs text-center underline cursor-pointer"
+            className="text-xs text-center text-white underline cursor-pointer"
             onClick={() => window.open(`${chain.blockExplorers[0]?.url}/tx/${status.transactionHash}`)}
           >
             View transaction
