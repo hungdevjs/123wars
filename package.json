@@ -5,6 +5,7 @@
   "author": "jackday1 <jack.nguyen@weareday.one>",
   "license": "MIT",
   "scripts": {
-    "deploy:app:staging": "yarn --cwd app build:staging && yarn --cwd firebase deploy:staging"
+    "deploy:app:staging": "yarn --cwd app build:staging && yarn --cwd firebase deploy:staging",
+    "deploy:app:production": "yarn --cwd app build:production && yarn --cwd firebase deploy:production"
   }
 }

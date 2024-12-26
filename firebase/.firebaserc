@@ -1,12 +1,20 @@
 {
   "projects": {
-    "staging": "tristrike-f4344"
+    "staging": "tristrike-f4344",
+    "production": "wars-c6667"
   },
   "targets": {
     "tristrike-f4344": {
       "hosting": {
         "app-staging": [
           "tristrike-f4344"
+        ]
+      }
+    },
+    "wars-c6667": {
+      "hosting": {
+        "app-production": [
+          "wars-c6667"
         ]
       }
     }

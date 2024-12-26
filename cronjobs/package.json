@@ -5,6 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
+    "start": "node index",
     "run:development": "env-cmd -f .env.development nodemon index",
     "run:staging": "env-cmd -f .env.staging nodemon index",
     "run:production": "env-cmd -f .env.production nodemon index",

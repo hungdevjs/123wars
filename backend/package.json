@@ -4,13 +4,13 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "run:development": "env-cmd -f .env.development nodemon index.js",
-    "run:staging": "env-cmd -f .env.staging nodemon index.js",
-    "run:production": "env-cmd -f .env.production nodemon index.js",
-    "start:development": "env-cmd -f .env.production node index.js",
-    "start:staging": "env-cmd -f .env.production node index.js",
-    "start:production": "env-cmd -f .env.production node index.js"
+    "start": "node index",
+    "run:development": "env-cmd -f .env.development nodemon index",
+    "run:staging": "env-cmd -f .env.staging nodemon index",
+    "run:production": "env-cmd -f .env.production nodemon index",
+    "start:development": "env-cmd -f .env.production node index",
+    "start:staging": "env-cmd -f .env.production node index",
+    "start:production": "env-cmd -f .env.production node index"
   },
   "license": "MIT",
   "dependencies": {
