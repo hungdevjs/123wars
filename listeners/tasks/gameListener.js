@@ -6,8 +6,8 @@ import War from '../assets/abis/War.json' assert { type: 'json' };
 import admin, { firestore } from '../configs/firebase.config.js';
 import { getProvider } from '../configs/quicknode.config.js';
 import environments from '../utils/environments.js';
-import { date } from '../../cronjobs/utils/strings.js';
-import { delay } from '../../app/src/utils/functions.js';
+import { date } from '../utils/strings.js';
+import { delay } from '../utils/functions.js';
 
 const { NODE_ENV, NETWORK_ID } = environments;
 

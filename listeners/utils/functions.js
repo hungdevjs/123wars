@@ -18,3 +18,5 @@ export const retry = async ({ name, action, maxRetry = 10 }) => {
 
   return { success };
 };
+
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
